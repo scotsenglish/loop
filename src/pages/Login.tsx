@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 
 export default function Login() {
-  const { signInWithGoogle, configured } = useAuth()
+  const { signInWithGoogle, configured, authError } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -49,6 +49,15 @@ export default function Login() {
               {loading ? 'Đang đăng nhập…' : 'Tiếp tục với Google'}
             </button>
             {error && <p className="mt-3 text-center text-sm text-rose-400">{error}</p>}
+            {authError && (
+              <div className="mt-3 rounded-xl border border-rose-400/30 bg-rose-400/10 p-3 text-center text-xs text-rose-200">
+                <p className="font-semibold">Đăng nhập chưa hoàn tất</p>
+                <p className="mt-1 text-rose-200/80">
+                  Mã lỗi: <code className="rounded bg-black/30 px-1">{authError}</code> — chụp lại
+                  dòng này gửi cho người hỗ trợ để xem nguyên nhân.
+                </p>
+              </div>
+            )}
             <p className="mt-6 text-center text-xs text-ink-400">
               Dữ liệu của bạn được đồng bộ an toàn và riêng tư giữa các thiết bị.
             </p>
