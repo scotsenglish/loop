@@ -65,7 +65,9 @@ Firebase là dịch vụ của Google dùng để lưu trữ dữ liệu chi ti�
 
 1. Vào [console.firebase.google.com](https://console.firebase.google.com), đăng nhập bằng tài khoản Google.
 2. Bấm **Add project** (hoặc **Tạo dự án**) → đặt tên, ví dụ `loop-expenses` → bấm tiếp cho đến khi tạo xong (có thể tắt Google Analytics nếu được hỏi, không bắt buộc).
-3. Trong menu bên trái, vào **Build → Authentication** → bấm **Get started** → chọn tab **Sign-in method** → bấm vào **Google** → bật công tắc **Enable** → **Save**.
+3. Trong menu bên trái, vào **Build → Authentication** → bấm **Get started** → chọn tab **Sign-in method**. Bật cả 2 cách đăng nhập sau (app hỗ trợ cả hai, bạn dùng cách nào tiện thì thôi):
+   - Bấm **Email/Password** → bật công tắc ở dòng đầu tiên → **Save**. Đây là cách đăng nhập bằng email + mật khẩu tự đặt, đơn giản và ít lỗi vặt nhất, đặc biệt khi dùng trên app đã cài vào màn hình chính.
+   - Bấm **Google** → bật công tắc **Enable** → chọn email hỗ trợ → **Save**.
 4. Vẫn trong menu bên trái, vào **Build → Firestore Database** → **Create database** → chọn **Start in production mode** → chọn khu vực gần bạn nhất, ví dụ `asia-southeast1 (Singapore)` → **Enable**.
 5. Bấm biểu tượng **bánh răng ⚙️** ở góc trên bên trái → **Project settings**. Kéo xuống mục **Your apps**, bấm vào icon **`</>`** (Web). Đặt tên app (ví dụ `loop-web`) → **Register app**.
 6. Firebase sẽ hiện ra một đoạn code như thế này — **giữ nguyên trang này**, bạn sẽ cần copy các giá trị ở bước 2:

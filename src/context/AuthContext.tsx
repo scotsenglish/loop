@@ -1,7 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import {
+  createUserWithEmailAndPassword,
   getRedirectResult,
   onAuthStateChanged,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signInWithRedirect,
   signOut as fbSignOut,
@@ -17,21 +20,14 @@ interface AuthContextValue {
   configured: boolean
   authError: string | null
   signInWithGoogle: () => Promise<void>
+  signInWithEmail: (email: string, password: string) => Promise<void>
+  signUpWithEmail: (email: string, password: string) => Promise<void>
+  resetPassword: (email: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-/** True when the app is running installed on the home screen (standalone
- *  display mode). In that mode `signInWithPopup` can't hand control back to
- *  the app on iOS, so we must use the redirect flow there. In a normal
- *  mobile browser tab, popup works fine and avoids Safari's redirect/ITP
- *  storage quirks — same reliable path as desktop. */
-function isStandalonePWA() {
-  const mql = window.matchMedia?.('(display-mode: standalone)').matches
-  const iosStandalone = (window.navigator as { standalone?: boolean }).standalone === true
-  return Boolean(mql || iosStandalone)
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -70,28 +66,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     setAuthError(null)
-    if (isStandalonePWA()) {
-      await signInWithRedirect(auth, googleProvider)
-      return
-    }
+    // Popup works reliably in regular browser tabs (desktop + mobile) and,
+    // on Android, inside an installed home-screen app too (it's still full
+    // Chrome under the hood). Only fall back to redirect if the popup path
+    // itself fails — e.g. iOS standalone mode, where window.open can't hand
+    // control back to the app.
     try {
       await signInWithPopup(auth, googleProvider)
     } catch (err) {
       const code = (err as { code?: string })?.code
-      // Some mobile browsers block/kill popups — fall back to redirect.
-      if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
+      const redirectFallbackCodes = [
+        'auth/popup-blocked',
+        'auth/cancelled-popup-request',
+        'auth/operation-not-supported-in-this-environment',
+      ]
+      if (code && redirectFallbackCodes.includes(code)) {
         await signInWithRedirect(auth, googleProvider)
         return
       }
+      setAuthError(code ?? 'unknown-error')
       throw err
     }
+  }
+
+  const signInWithEmail = async (email: string, password: string) => {
+    setAuthError(null)
+    await signInWithEmailAndPassword(auth, email, password)
+  }
+
+  const signUpWithEmail = async (email: string, password: string) => {
+    setAuthError(null)
+    await createUserWithEmailAndPassword(auth, email, password)
+  }
+
+  const resetPassword = async (email: string) => {
+    setAuthError(null)
+    await sendPasswordResetEmail(auth, email)
   }
 
   const signOut = () => fbSignOut(auth)
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, configured: isFirebaseConfigured, authError, signInWithGoogle, signOut }}
+      value={{
+        user,
+        loading,
+        configured: isFirebaseConfigured,
+        authError,
+        signInWithGoogle,
+        signInWithEmail,
+        signUpWithEmail,
+        resetPassword,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>
