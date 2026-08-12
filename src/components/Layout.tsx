@@ -9,7 +9,7 @@ export function Layout() {
 
   return (
     <div className="min-h-dvh bg-ink-50 pb-28 dark:bg-ink-950">
-      <div className="mx-auto max-w-lg safe-x">
+      <div className="mx-auto max-w-lg safe-x safe-top">
         {/* Keying on the path forces a remount on navigation so the fade+slide
             entrance animation replays for every screen, not just the first. */}
         <div key={location.pathname} className="animate-page-in">

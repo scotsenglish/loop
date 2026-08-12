@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import clsx from 'clsx'
 import { useLanguage } from '@/context/LanguageContext'
@@ -61,7 +62,11 @@ export function PinSetupSheet({ open, onClose, onConfirm }: Props) {
 
   if (!open) return null
 
-  return (
+  // Portal straight onto <body> — see AddTransactionSheet.tsx for why:
+  // sheets opened from inside a page (this one from Settings.tsx) get
+  // trapped under the bottom nav bar by the page wrapper's
+  // animation-induced stacking context otherwise.
+  return createPortal(
     <div className="animate-fade-in fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-ink-950 px-6 text-white safe-top safe-bottom">
       <button
         onClick={handleClose}
@@ -94,6 +99,7 @@ export function PinSetupSheet({ open, onClose, onConfirm }: Props) {
       <div className="w-full max-w-xs">
         <PinKeypad onKey={handleKey} />
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

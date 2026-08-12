@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import clsx from 'clsx'
 import { useData } from '@/context/DataContext'
@@ -55,7 +56,10 @@ export function GoalFormSheet({ open, onClose }: Props) {
 
   const canCreate = name.trim().length > 0 && parseAmountInput(targetStr) > 0
 
-  return (
+  // Portal straight onto <body> — see AddTransactionSheet.tsx for why:
+  // sheets opened from inside a page get trapped under the bottom nav bar
+  // by the page wrapper's animation-induced stacking context otherwise.
+  return createPortal(
     <div className="animate-fade-in fixed inset-0 z-40 flex items-end justify-center bg-ink-950/50 backdrop-blur-sm">
       <div className="animate-rise-in flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-3xl bg-white safe-bottom dark:bg-ink-900">
         <div className="flex items-center justify-between px-5 pt-4">
@@ -133,6 +137,7 @@ export function GoalFormSheet({ open, onClose }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

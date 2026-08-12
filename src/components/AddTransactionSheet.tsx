@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { format } from 'date-fns'
 import { X, Check } from 'lucide-react'
 import clsx from 'clsx'
@@ -114,7 +115,14 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
 
   const canSave = (parseInt(amountStr, 10) || 0) > 0 && !!categoryId
 
-  return (
+  // Rendered via portal straight onto <body>: this sheet is opened both from
+  // Layout (top-level) and from inside individual pages (e.g. editing a
+  // transaction from Transactions.tsx). When mounted from a page, it sits
+  // inside the page's animated wrapper div, whose CSS animation makes that
+  // wrapper form its own stacking context — trapping this sheet's z-index
+  // "inside" it and letting the bottom nav bar paint over it. A portal
+  // sidesteps that entirely by attaching straight to <body>.
+  return createPortal(
     <div className="animate-fade-in fixed inset-0 z-40 flex items-end justify-center bg-ink-950/50 backdrop-blur-sm">
       <div className="animate-rise-in flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-3xl bg-white safe-bottom dark:bg-ink-900">
         <div className="flex items-center justify-between px-5 pt-4">
@@ -221,6 +229,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
