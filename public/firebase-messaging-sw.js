@@ -5,6 +5,9 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js')
 
 const params = new URLSearchParams(self.location.search)
+// Derive the app's base path (e.g. "/loop/") from where this file itself is
+// served, so icon URLs still resolve correctly on GitHub Pages subpaths.
+const BASE = self.location.pathname.replace(/firebase-messaging-sw\.js$/, '')
 
 firebase.initializeApp({
   apiKey: params.get('apiKey'),
@@ -22,8 +25,8 @@ messaging.onBackgroundMessage((payload) => {
   const body = payload.notification?.body || 'Đừng quên ghi lại chi tiêu hôm nay nhé!'
   self.registration.showNotification(title, {
     body,
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-96.png',
+    icon: `${BASE}icons/icon-192.png`,
+    badge: `${BASE}icons/icon-96.png`,
     tag: 'loop-daily-reminder',
   })
 })

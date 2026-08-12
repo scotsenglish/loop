@@ -37,16 +37,17 @@ export function useReminder(settings: UserSettings) {
       if (Notification.permission !== 'granted') return
       const msg = REMINDER_MESSAGES[Math.floor(Math.random() * REMINDER_MESSAGES.length)]
       try {
+        const base = import.meta.env.BASE_URL
         const reg = await navigator.serviceWorker?.getRegistration()
         if (reg) {
           reg.showNotification('Loop nhắc bạn 👋', {
             body: msg,
-            icon: '/icons/icon-192.png',
-            badge: '/icons/icon-96.png',
+            icon: `${base}icons/icon-192.png`,
+            badge: `${base}icons/icon-96.png`,
             tag: 'loop-daily-reminder',
           })
         } else {
-          new Notification('Loop nhắc bạn 👋', { body: msg, icon: '/icons/icon-192.png' })
+          new Notification('Loop nhắc bạn 👋', { body: msg, icon: `${base}icons/icon-192.png` })
         }
       } catch {
         // Notifications unsupported or blocked — the in-app banner still covers this.

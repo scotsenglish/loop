@@ -67,8 +67,8 @@ exports.sendDailyReminders = onSchedule(
               body: 'Hôm nay bạn chưa ghi chi tiêu nào — dành 10 giây ghi lại nhé!',
             },
             webpush: {
-              fcmOptions: { link: '/' },
-              notification: { icon: '/icons/icon-192.png' },
+              fcmOptions: { link: '/loop/' },
+              notification: { icon: '/loop/icons/icon-192.png' },
             },
           })
           .catch((err) => console.error(`Gửi push lỗi cho user ${doc.id}:`, err))

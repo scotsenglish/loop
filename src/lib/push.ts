@@ -12,9 +12,10 @@ const FIREBASE_CFG = {
 
 async function registerPushServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (!('serviceWorker' in navigator)) return null
+  const base = import.meta.env.BASE_URL
   const params = new URLSearchParams(FIREBASE_CFG).toString()
-  return navigator.serviceWorker.register(`/firebase-messaging-sw.js?${params}`, {
-    scope: '/firebase-push/',
+  return navigator.serviceWorker.register(`${base}firebase-messaging-sw.js?${params}`, {
+    scope: `${base}firebase-push/`,
   })
 }
 
