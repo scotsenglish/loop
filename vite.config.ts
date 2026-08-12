@@ -21,7 +21,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/apple-touch-icon.png'],
       manifest: {
-        id: '/',
+        id: './',
         lang: 'vi',
         name: 'Loop – Nhật ký chi tiêu',
         short_name: 'Loop',
