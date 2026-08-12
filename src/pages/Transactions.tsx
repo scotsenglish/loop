@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
 import { useData } from '@/context/DataContext'
 import { useLanguage } from '@/context/LanguageContext'
+import { useToast } from '@/context/ToastContext'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { TransactionRow } from '@/components/TransactionRow'
 import { AddTransactionSheet } from '@/components/AddTransactionSheet'
@@ -13,12 +14,15 @@ import type { Transaction } from '@/types'
 type Filter = 'all' | 'expense' | 'income'
 
 export default function Transactions() {
-  const { transactions, categories } = useData()
+  const { transactions, categories, softDeleteTransactions, undoSoftDelete } = useData()
   const { t } = useLanguage()
+  const { showToast } = useToast()
   const [month, setMonth] = useState(monthKey(new Date()))
   const [filter, setFilter] = useState<Filter>('all')
   const [search, setSearch] = useState('')
   const [editing, setEditing] = useState<Transaction | null>(null)
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const monthTx = useMemo(() => monthTransactions(transactions, month), [transactions, month])
 
@@ -44,9 +48,41 @@ export default function Transactions() {
     ['income', t('txPage.filterIncome')],
   ]
 
+  function toggleSelectMode() {
+    setSelectMode((v) => !v)
+    setSelectedIds(new Set())
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function handleBulkDelete() {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+    const batchId = softDeleteTransactions(ids)
+    showToast(ids.length === 1 ? t('toast.deletedOne') : t('toast.deletedMany', ids.length), {
+      action: { label: t('toast.undo'), onClick: () => undoSoftDelete(batchId) },
+    })
+    setSelectedIds(new Set())
+    setSelectMode(false)
+  }
+
   return (
     <div className="px-4 pt-6">
-      <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">{t('txPage.title')}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">
+          {selectMode ? t('txPage.selectedCount', selectedIds.size) : t('txPage.title')}
+        </h1>
+        <button onClick={toggleSelectMode} className="text-sm font-semibold text-brand-500">
+          {selectMode ? t('txPage.doneSelect') : t('txPage.select')}
+        </button>
+      </div>
 
       <div className="mt-4">
         <MonthSwitcher month={month} onChange={setMonth} />
@@ -90,7 +126,7 @@ export default function Transactions() {
         ))}
       </div>
 
-      <div className="mt-4 space-y-4 pb-6">
+      <div className="mt-4 space-y-4 pb-24">
         {grouped.length === 0 && (
           <p className="py-10 text-center text-sm text-ink-400">{t('txPage.noneMatch')}</p>
         )}
@@ -110,12 +146,29 @@ export default function Transactions() {
                   tx={tx}
                   category={categories.find((c) => c.id === tx.categoryId)}
                   onClick={() => setEditing(tx)}
+                  selectable={selectMode}
+                  selected={selectedIds.has(tx.id)}
+                  onToggleSelect={() => toggleSelect(tx.id)}
                 />
               ))}
             </div>
           </div>
         ))}
       </div>
+
+      {selectMode && selectedIds.size > 0 && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 safe-x">
+          <div className="animate-rise-in pointer-events-auto flex w-full max-w-lg items-center justify-between rounded-2xl bg-ink-900 px-4 py-3 text-white shadow-card dark:bg-ink-800">
+            <span className="text-sm font-semibold">{t('txPage.selectedCount', selectedIds.size)}</span>
+            <button
+              onClick={handleBulkDelete}
+              className="flex items-center gap-1.5 rounded-full bg-rose-500 px-3.5 py-1.5 text-xs font-semibold"
+            >
+              <Trash2 className="h-3.5 w-3.5" /> {t('txPage.deleteSelected')}
+            </button>
+          </div>
+        </div>
+      )}
 
       <AddTransactionSheet open={!!editing} onClose={() => setEditing(null)} editing={editing} />
     </div>

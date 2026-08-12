@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { format } from 'date-fns'
 import { useAuth } from '@/context/AuthContext'
 import type { Budget, Category, Transaction, UserSettings } from '@/types'
@@ -6,6 +6,7 @@ import { DEFAULT_SETTINGS } from '@/types'
 import {
   addTransaction as apiAddTransaction,
   deleteTransaction as apiDeleteTransaction,
+  deleteTransactionsBatch as apiDeleteTransactionsBatch,
   updateTransaction as apiUpdateTransaction,
   addCategory as apiAddCategory,
   updateCategory as apiUpdateCategory,
@@ -29,6 +30,11 @@ interface DataContextValue {
   addTransaction: (tx: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>
   updateTransaction: (id: string, patch: Partial<Transaction>) => Promise<void>
   deleteTransaction: (id: string) => Promise<void>
+  /** Hides the given transaction ids immediately and schedules the real
+   *  Firestore delete after a grace period, so the caller can offer an
+   *  "Undo" toast. Returns a batchId to pass to undoSoftDelete(). */
+  softDeleteTransactions: (ids: string[]) => string
+  undoSoftDelete: (batchId: string) => void
   addCategory: (cat: Omit<Category, 'id'>) => Promise<void>
   updateCategory: (id: string, patch: Partial<Category>) => Promise<void>
   deleteCategory: (id: string) => Promise<void>
@@ -39,6 +45,8 @@ interface DataContextValue {
 
 const DataContext = createContext<DataContextValue | undefined>(undefined)
 
+const UNDO_GRACE_MS = 5000
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -46,6 +54,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [budgets, setBudgets] = useState<Budget[]>([])
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
   const [ready, setReady] = useState(false)
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set())
+  const pendingBatchesRef = useRef<Map<string, { ids: string[]; timer: number }>>(new Map())
 
   useEffect(() => {
     if (!user) {
@@ -54,6 +64,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setBudgets([])
       setSettings(DEFAULT_SETTINGS)
       setReady(false)
+      // Drop any in-flight undo timers — the signed-out user's transactions
+      // list is gone anyway, so there's nothing left to actually delete.
+      pendingBatchesRef.current.forEach((entry) => window.clearTimeout(entry.timer))
+      pendingBatchesRef.current.clear()
+      setPendingDeleteIds(new Set())
       return
     }
     setReady(false)
@@ -79,15 +94,56 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function softDeleteTransactions(ids: string[]): string {
+    const uid = user?.uid
+    const batchId = `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    setPendingDeleteIds((prev) => {
+      const next = new Set(prev)
+      ids.forEach((id) => next.add(id))
+      return next
+    })
+    const timer = window.setTimeout(async () => {
+      pendingBatchesRef.current.delete(batchId)
+      setPendingDeleteIds((prev) => {
+        const next = new Set(prev)
+        ids.forEach((id) => next.delete(id))
+        return next
+      })
+      if (uid) {
+        try {
+          await apiDeleteTransactionsBatch(uid, ids)
+        } catch (err) {
+          console.error('Failed to commit soft-deleted transactions:', err)
+        }
+      }
+    }, UNDO_GRACE_MS)
+    pendingBatchesRef.current.set(batchId, { ids, timer })
+    return batchId
+  }
+
+  function undoSoftDelete(batchId: string) {
+    const entry = pendingBatchesRef.current.get(batchId)
+    if (!entry) return
+    window.clearTimeout(entry.timer)
+    pendingBatchesRef.current.delete(batchId)
+    setPendingDeleteIds((prev) => {
+      const next = new Set(prev)
+      entry.ids.forEach((id) => next.delete(id))
+      return next
+    })
+  }
+
   const value: DataContextValue = {
     ready,
-    transactions,
+    transactions: transactions.filter((t) => !pendingDeleteIds.has(t.id)),
     categories,
     budgets,
     settings,
     addTransaction,
     updateTransaction: (id, patch) => (user ? apiUpdateTransaction(user.uid, id, patch) : Promise.resolve()),
     deleteTransaction: (id) => (user ? apiDeleteTransaction(user.uid, id) : Promise.resolve()),
+    softDeleteTransactions,
+    undoSoftDelete,
     addCategory: (cat) => (user ? apiAddCategory(user.uid, cat) : Promise.resolve()),
     updateCategory: (id, patch) => (user ? apiUpdateCategory(user.uid, id, patch) : Promise.resolve()),
     deleteCategory: (id) => (user ? apiDeleteCategory(user.uid, id) : Promise.resolve()),

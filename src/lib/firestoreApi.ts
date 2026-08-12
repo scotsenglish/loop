@@ -87,6 +87,15 @@ export async function deleteTransaction(uid: string, id: string) {
   await deleteDoc(doc(transactionsCol(uid), id))
 }
 
+export async function deleteTransactionsBatch(uid: string, ids: string[]) {
+  if (ids.length === 0) return
+  const batch = writeBatch(db)
+  for (const id of ids) {
+    batch.delete(doc(transactionsCol(uid), id))
+  }
+  await batch.commit()
+}
+
 // ---------- Categories ----------
 export async function addCategory(uid: string, cat: Omit<Category, 'id'>) {
   await addDoc(categoriesCol(uid), { ...cat, isCustom: true })

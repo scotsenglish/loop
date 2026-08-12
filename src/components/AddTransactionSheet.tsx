@@ -4,7 +4,8 @@ import { X, Check } from 'lucide-react'
 import clsx from 'clsx'
 import { useData } from '@/context/DataContext'
 import { useLanguage } from '@/context/LanguageContext'
-import { formatNumber } from '@/lib/format'
+import { useToast } from '@/context/ToastContext'
+import { formatNumber, formatVND } from '@/lib/format'
 import { localizeCategoryName } from '@/lib/i18n'
 import { NumericKeypad } from '@/components/NumericKeypad'
 import type { Transaction, TransactionType } from '@/types'
@@ -18,8 +19,10 @@ interface Props {
 }
 
 export function AddTransactionSheet({ open, onClose, editing }: Props) {
-  const { categories, addTransaction, updateTransaction, deleteTransaction } = useData()
+  const { categories, budgets, transactions, addTransaction, updateTransaction, softDeleteTransactions, undoSoftDelete } =
+    useData()
   const { t, lang } = useLanguage()
+  const { showToast } = useToast()
   const [type, setType] = useState<TransactionType>('expense')
   const [amountStr, setAmountStr] = useState('0')
   const [categoryId, setCategoryId] = useState<string | null>(null)
@@ -57,6 +60,33 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
     })
   }
 
+  function maybeWarnBudget(finalCategoryId: string, finalAmount: number, finalDate: string) {
+    const month = finalDate.slice(0, 7)
+    const budget = budgets.find((b) => b.categoryId === finalCategoryId && b.month === month)
+    if (!budget || budget.amount <= 0) return
+
+    const otherSpent = transactions
+      .filter(
+        (tx) =>
+          tx.type === 'expense' &&
+          tx.categoryId === finalCategoryId &&
+          tx.date.startsWith(month) &&
+          tx.id !== editing?.id
+      )
+      .reduce((s, tx) => s + tx.amount, 0)
+    const spent = otherSpent + finalAmount
+    const percent = (spent / budget.amount) * 100
+    if (percent < 80) return
+
+    const category = categories.find((c) => c.id === finalCategoryId)
+    const name = category ? localizeCategoryName(category.name, lang) : ''
+    if (percent >= 100) {
+      showToast(t('budget.warningOver', name, formatVND(spent - budget.amount)))
+    } else {
+      showToast(t('budget.warningNear', name, Math.round(percent), formatVND(spent), formatVND(budget.amount)))
+    }
+  }
+
   async function handleSave() {
     const amount = parseInt(amountStr, 10) || 0
     if (amount <= 0 || !categoryId) return
@@ -67,21 +97,20 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
       } else {
         await addTransaction({ type, amount, categoryId, note, date })
       }
+      if (type === 'expense') maybeWarnBudget(categoryId, amount, date)
       onClose()
     } finally {
       setSaving(false)
     }
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!editing) return
-    setSaving(true)
-    try {
-      await deleteTransaction(editing.id)
-      onClose()
-    } finally {
-      setSaving(false)
-    }
+    const batchId = softDeleteTransactions([editing.id])
+    showToast(t('toast.deletedOne'), {
+      action: { label: t('toast.undo'), onClick: () => undoSoftDelete(batchId) },
+    })
+    onClose()
   }
 
   if (!open) return null

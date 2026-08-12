@@ -57,6 +57,10 @@ const vi: Dict = {
 
   // Budget progress
   'budget.over': (amount: string) => `Vượt ngân sách ${amount}`,
+  'budget.warningNear': (name: string, percent: number, spent: string, total: string) =>
+    `Bạn đã dùng ${percent}% ngân sách ${name} tháng này (${spent}/${total})`,
+  'budget.warningOver': (name: string, amount: string) =>
+    `Bạn đã vượt ngân sách ${name} tháng này ${amount}`,
 
   // Common
   'common.noData': 'Chưa có dữ liệu để hiển thị',
@@ -86,6 +90,15 @@ const vi: Dict = {
   'txPage.filterExpense': 'Chi tiêu',
   'txPage.filterIncome': 'Thu nhập',
   'txPage.noneMatch': 'Không có giao dịch nào phù hợp',
+  'txPage.select': 'Chọn',
+  'txPage.doneSelect': 'Xong',
+  'txPage.selectedCount': (n: number) => `Đã chọn ${n}`,
+  'txPage.deleteSelected': 'Xoá',
+
+  // Toast
+  'toast.deletedOne': 'Đã xoá giao dịch',
+  'toast.deletedMany': (n: number) => `Đã xoá ${n} giao dịch`,
+  'toast.undo': 'Hoàn tác',
 
   // Stats page
   'statsPage.title': 'Thống kê',
@@ -212,6 +225,10 @@ const en: Dict = {
 
   // Budget progress
   'budget.over': (amount: string) => `Over budget by ${amount}`,
+  'budget.warningNear': (name: string, percent: number, spent: string, total: string) =>
+    `You've used ${percent}% of your ${name} budget this month (${spent}/${total})`,
+  'budget.warningOver': (name: string, amount: string) =>
+    `You've gone over your ${name} budget this month by ${amount}`,
 
   // Common
   'common.noData': 'No data to display yet',
@@ -241,6 +258,15 @@ const en: Dict = {
   'txPage.filterExpense': 'Expense',
   'txPage.filterIncome': 'Income',
   'txPage.noneMatch': 'No matching transactions',
+  'txPage.select': 'Select',
+  'txPage.doneSelect': 'Done',
+  'txPage.selectedCount': (n: number) => `${n} selected`,
+  'txPage.deleteSelected': 'Delete',
+
+  // Toast
+  'toast.deletedOne': 'Transaction deleted',
+  'toast.deletedMany': (n: number) => `${n} transactions deleted`,
+  'toast.undo': 'Undo',
 
   // Stats page
   'statsPage.title': 'Stats',
