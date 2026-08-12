@@ -5,6 +5,16 @@ export function monthKey(date: Date): string {
   return format(date, 'yyyy-MM')
 }
 
+/** Days remaining in `month` (yyyy-MM), counting today. Returns 0 if `month`
+ *  isn't the current calendar month — pacing only makes sense for the month
+ *  you're actually living in right now. */
+export function daysLeftInMonth(month: string): number {
+  const now = new Date()
+  if (monthKey(now) !== month) return 0
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+  return lastDay - now.getDate() + 1
+}
+
 export function isInMonth(tx: Transaction, month: string): boolean {
   return tx.date.startsWith(month)
 }

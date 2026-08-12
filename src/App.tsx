@@ -1,8 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useData } from '@/context/DataContext'
+import { useLock } from '@/context/LockContext'
 import { useTheme } from '@/hooks/useTheme'
 import { LoadingScreen } from '@/components/LoadingScreen'
+import { LockScreen } from '@/components/LockScreen'
 import { Layout } from '@/components/Layout'
 import Login from '@/pages/Login'
 import Home from '@/pages/Home'
@@ -35,9 +37,11 @@ function AuthedApp() {
 
 export default function App() {
   const { user, loading } = useAuth()
+  const { lockEnabled, locked } = useLock()
 
   if (loading) return <LoadingScreen />
   if (!user) return <Login />
+  if (lockEnabled && locked) return <LockScreen />
 
   return <AuthedApp />
 }

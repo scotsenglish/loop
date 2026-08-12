@@ -2,21 +2,30 @@ import clsx from 'clsx'
 import type { Category } from '@/types'
 import { formatVND } from '@/lib/format'
 import { localizeCategoryName } from '@/lib/i18n'
+import { daysLeftInMonth } from '@/lib/stats'
 import { useLanguage } from '@/context/LanguageContext'
 
 export function BudgetProgressBar({
   category,
   spent,
   budget,
+  month,
 }: {
   category: Category | undefined
   spent: number
   budget: number
+  /** yyyy-MM of the budget being shown. Only used to decide whether to show
+   *  the daily-pacing hint (it only makes sense for the current month). */
+  month?: string
 }) {
   const { t, lang } = useLanguage()
   const percent = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0
   const over = spent > budget
   const near = !over && percent >= 80
+
+  const remaining = budget - spent
+  const daysLeft = month ? daysLeftInMonth(month) : 0
+  const showPace = !over && daysLeft > 0 && remaining > 0
 
   return (
     <div className="py-2">
@@ -46,6 +55,11 @@ export function BudgetProgressBar({
       {over && (
         <p className="mt-1 text-[11px] font-medium text-rose-500">
           {t('budget.over', formatVND(spent - budget))}
+        </p>
+      )}
+      {!over && showPace && (
+        <p className="mt-1 text-[11px] text-ink-400">
+          {t('budget.pace', daysLeft, formatVND(remaining), formatVND(Math.round(remaining / daysLeft)))}
         </p>
       )}
     </div>

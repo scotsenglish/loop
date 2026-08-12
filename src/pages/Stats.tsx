@@ -141,6 +141,7 @@ export default function Stats() {
                       category={categories.find((c) => c.id === b.categoryId)}
                       spent={spent}
                       budget={b.amount}
+                      month={month}
                     />
                   )
                 })}

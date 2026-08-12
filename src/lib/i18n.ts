@@ -61,6 +61,8 @@ const vi: Dict = {
     `Bạn đã dùng ${percent}% ngân sách ${name} tháng này (${spent}/${total})`,
   'budget.warningOver': (name: string, amount: string) =>
     `Bạn đã vượt ngân sách ${name} tháng này ${amount}`,
+  'budget.pace': (days: number, remaining: string, perDay: string) =>
+    `Còn ${days} ngày · ~${perDay}/ngày (dư ${remaining})`,
 
   // Common
   'common.noData': 'Chưa có dữ liệu để hiển thị',
@@ -170,6 +172,24 @@ const vi: Dict = {
   'csv.note': 'Ghi chú',
   'csv.expense': 'Chi tiêu',
   'csv.income': 'Thu nhập',
+
+  // App lock
+  'lock.section': 'Bảo mật',
+  'lock.pinLabel': 'Khoá bằng mã PIN',
+  'lock.pinDesc': 'Yêu cầu nhập mã PIN mỗi khi mở lại app',
+  'lock.changePin': 'Đổi mã PIN',
+  'lock.biometricLabel': 'Face ID / Touch ID',
+  'lock.biometricDesc': 'Mở khoá nhanh bằng sinh trắc học của thiết bị',
+  'lock.title': 'Loop đã khoá',
+  'lock.enterPin': 'Nhập mã PIN để mở khoá',
+  'lock.wrongPin': 'Sai mã PIN, thử lại nhé',
+  'lock.useBiometric': 'Dùng Face ID / Touch ID',
+  'lock.setupTitle': 'Tạo mã PIN',
+  'lock.setupDesc': 'Nhập 6 chữ số',
+  'lock.confirmTitle': 'Xác nhận mã PIN',
+  'lock.pinMismatch': 'Mã PIN không khớp, thử lại nhé',
+  'lock.verifyTitle': 'Xác nhận mã PIN hiện tại',
+  'lock.biometricFailed': 'Không bật được Face ID / Touch ID trên thiết bị này',
 }
 
 const en: Dict = {
@@ -229,6 +249,8 @@ const en: Dict = {
     `You've used ${percent}% of your ${name} budget this month (${spent}/${total})`,
   'budget.warningOver': (name: string, amount: string) =>
     `You've gone over your ${name} budget this month by ${amount}`,
+  'budget.pace': (days: number, remaining: string, perDay: string) =>
+    `${days} days left · ~${perDay}/day (${remaining} left)`,
 
   // Common
   'common.noData': 'No data to display yet',
@@ -338,6 +360,24 @@ const en: Dict = {
   'csv.note': 'Note',
   'csv.expense': 'Expense',
   'csv.income': 'Income',
+
+  // App lock
+  'lock.section': 'Security',
+  'lock.pinLabel': 'Lock with PIN',
+  'lock.pinDesc': 'Require a PIN every time you reopen the app',
+  'lock.changePin': 'Change PIN',
+  'lock.biometricLabel': 'Face ID / Touch ID',
+  'lock.biometricDesc': 'Quick unlock using your device biometrics',
+  'lock.title': 'Loop is locked',
+  'lock.enterPin': 'Enter your PIN to unlock',
+  'lock.wrongPin': 'Wrong PIN, try again',
+  'lock.useBiometric': 'Use Face ID / Touch ID',
+  'lock.setupTitle': 'Create a PIN',
+  'lock.setupDesc': 'Enter 6 digits',
+  'lock.confirmTitle': 'Confirm your PIN',
+  'lock.pinMismatch': "PINs don't match, try again",
+  'lock.verifyTitle': 'Confirm your current PIN',
+  'lock.biometricFailed': "Couldn't enable Face ID / Touch ID on this device",
 }
 
 export const dictionaries: Record<Lang, Dict> = { vi, en }

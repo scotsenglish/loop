@@ -6,6 +6,7 @@ import App from './App.tsx'
 import { AuthProvider } from '@/context/AuthContext'
 import { DataProvider } from '@/context/DataContext'
 import { LanguageProvider } from '@/context/LanguageContext'
+import { LockProvider } from '@/context/LockContext'
 import { ToastProvider } from '@/context/ToastContext'
 
 createRoot(document.getElementById('root')!).render(
@@ -13,11 +14,13 @@ createRoot(document.getElementById('root')!).render(
     <LanguageProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AuthProvider>
-          <DataProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </DataProvider>
+          <LockProvider>
+            <DataProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </DataProvider>
+          </LockProvider>
         </AuthProvider>
       </BrowserRouter>
     </LanguageProvider>

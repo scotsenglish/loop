@@ -4,7 +4,9 @@ import {
   Bell,
   ChevronRight,
   Download,
+  Fingerprint,
   Flame,
+  Lock,
   LogOut,
   Moon,
   PiggyBank,
@@ -16,6 +18,10 @@ import clsx from 'clsx'
 import { useAuth } from '@/context/AuthContext'
 import { useData } from '@/context/DataContext'
 import { useLanguage } from '@/context/LanguageContext'
+import { useLock } from '@/context/LockContext'
+import { useToast } from '@/context/ToastContext'
+import { PinSetupSheet } from '@/components/PinSetupSheet'
+import { PinVerifySheet } from '@/components/PinVerifySheet'
 import { exportTransactionsCSV, exportTransactionsJSON } from '@/lib/exportData'
 import { enablePush } from '@/lib/push'
 import type { Lang } from '@/lib/i18n'
@@ -25,7 +31,19 @@ export default function Settings() {
   const { user, signOut } = useAuth()
   const { settings, updateSettings, transactions, categories } = useData()
   const { t, lang, setLang } = useLanguage()
+  const {
+    lockEnabled,
+    biometricAvailable,
+    biometricEnabled,
+    setupPin,
+    disableLock,
+    enableBiometric,
+    disableBiometric,
+  } = useLock()
+  const { showToast } = useToast()
   const [pushBusy, setPushBusy] = useState(false)
+  const [pinSetupOpen, setPinSetupOpen] = useState(false)
+  const [pinVerifyMode, setPinVerifyMode] = useState<'disable' | 'change' | null>(null)
 
   async function togglePush(next: boolean) {
     if (!next) {
@@ -43,6 +61,38 @@ export default function Settings() {
       }
     } finally {
       setPushBusy(false)
+    }
+  }
+
+  function handleTogglePin(next: boolean) {
+    if (next) {
+      setPinSetupOpen(true)
+    } else {
+      setPinVerifyMode('disable')
+    }
+  }
+
+  async function handlePinConfirmed(pin: string) {
+    await setupPin(pin)
+    setPinSetupOpen(false)
+  }
+
+  function handlePinVerified() {
+    if (pinVerifyMode === 'disable') {
+      disableLock()
+      setPinVerifyMode(null)
+    } else if (pinVerifyMode === 'change') {
+      setPinVerifyMode(null)
+      setPinSetupOpen(true)
+    }
+  }
+
+  async function handleToggleBiometric(next: boolean) {
+    if (next) {
+      const ok = await enableBiometric()
+      if (!ok) showToast(t('lock.biometricFailed'))
+    } else {
+      disableBiometric()
     }
   }
 
@@ -104,6 +154,38 @@ export default function Settings() {
         >
           <Toggle checked={settings.pushEnabled} onChange={togglePush} disabled={pushBusy} />
         </Row>
+      </div>
+
+      <SectionTitle>{t('lock.section')}</SectionTitle>
+      <div className="card-surface divide-y divide-ink-100 rounded-2xl shadow-soft dark:divide-ink-800">
+        <Row
+          icon={<Lock className="h-5 w-5 text-brand-500" />}
+          label={t('lock.pinLabel')}
+          desc={t('lock.pinDesc')}
+        >
+          <Toggle checked={lockEnabled} onChange={handleTogglePin} />
+        </Row>
+        {lockEnabled && (
+          <button
+            onClick={() => setPinVerifyMode('change')}
+            className="flex w-full items-center gap-3 px-4 py-3.5"
+          >
+            <span className="w-5" />
+            <span className="flex-1 text-left text-sm font-medium text-ink-700 dark:text-ink-100">
+              {t('lock.changePin')}
+            </span>
+            <ChevronRight className="h-4 w-4 text-ink-300" />
+          </button>
+        )}
+        {lockEnabled && biometricAvailable && (
+          <Row
+            icon={<Fingerprint className="h-5 w-5 text-accent-500" />}
+            label={t('lock.biometricLabel')}
+            desc={t('lock.biometricDesc')}
+          >
+            <Toggle checked={biometricEnabled} onChange={handleToggleBiometric} />
+          </Row>
+        )}
       </div>
 
       <SectionTitle>{t('settingsPage.manageSection')}</SectionTitle>
@@ -200,6 +282,13 @@ export default function Settings() {
       </button>
 
       <p className="mt-6 text-center text-[11px] text-ink-300">{t('settingsPage.version')}</p>
+
+      <PinSetupSheet open={pinSetupOpen} onClose={() => setPinSetupOpen(false)} onConfirm={handlePinConfirmed} />
+      <PinVerifySheet
+        open={pinVerifyMode !== null}
+        onClose={() => setPinVerifyMode(null)}
+        onVerified={handlePinVerified}
+      />
     </div>
   )
 }

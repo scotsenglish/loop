@@ -107,7 +107,7 @@ export default function Budgets() {
               </div>
               {budget && !isEditing && (
                 <div className="mt-1">
-                  <BudgetProgressBar category={c} spent={spent} budget={budget.amount} />
+                  <BudgetProgressBar category={c} spent={spent} budget={budget.amount} month={month} />
                 </div>
               )}
             </div>
