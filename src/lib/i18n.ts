@@ -108,6 +108,7 @@ const vi: Dict = {
   'toast.deletedOne': 'Đã xoá giao dịch',
   'toast.deletedMany': (n: number) => `Đã xoá ${n} giao dịch`,
   'toast.undo': 'Hoàn tác',
+  'toast.actionFailed': 'Thao tác thất bại, thử lại nhé',
 
   // Stats page
   'statsPage.title': 'Thống kê',
@@ -141,6 +142,8 @@ const vi: Dict = {
   'categoriesPage.cancel': 'Huỷ',
   'categoriesPage.addCategory': 'Thêm danh mục',
   'categoriesPage.addNew': 'Thêm danh mục mới',
+  'categoriesPage.editCategory': 'Sửa danh mục',
+  'categoriesPage.delete': 'Xoá danh mục',
 
   // Settings page
   'settingsPage.title': 'Cài đặt',
@@ -179,6 +182,27 @@ const vi: Dict = {
   'csv.note': 'Ghi chú',
   'csv.expense': 'Chi tiêu',
   'csv.income': 'Thu nhập',
+
+  // Savings goals
+  'goalsPage.title': 'Mục tiêu tiết kiệm',
+  'goalsPage.empty': 'Chưa có mục tiêu nào',
+  'goalsPage.addFirst': 'Tạo mục tiêu đầu tiên',
+  'goalsPage.addNew': 'Tạo mục tiêu mới',
+  'goalsPage.namePlaceholder': 'Tên mục tiêu (VD: Mua laptop)',
+  'goalsPage.targetAmount': 'Số tiền mục tiêu',
+  'goalsPage.targetDateOptional': 'Hạn chót (tuỳ chọn)',
+  'goalsPage.create': 'Tạo mục tiêu',
+  'goalsPage.completed': 'Đã hoàn thành 🎉',
+  'goalsPage.projected': (date: string) => `Dự kiến đạt vào ${date}`,
+  'goalsPage.noPaceYet': 'Nạp tiền để bắt đầu theo dõi tiến độ',
+  'goalsPage.deposit': 'Nạp tiền',
+  'goalsPage.withdraw': 'Rút tiền',
+  'goalsPage.confirm': 'Xác nhận',
+  'goalsPage.deposited': (amount: string) => `Đã nạp ${amount}`,
+  'goalsPage.withdrawn': (amount: string) => `Đã rút ${amount}`,
+  'goalsPage.recentActivity': 'Hoạt động gần đây',
+  'goalsPage.noActivity': 'Chưa có hoạt động nào',
+  'goalsPage.delete': 'Xoá mục tiêu',
 
   // App lock
   'lock.section': 'Bảo mật',
@@ -303,6 +327,7 @@ const en: Dict = {
   'toast.deletedOne': 'Transaction deleted',
   'toast.deletedMany': (n: number) => `${n} transactions deleted`,
   'toast.undo': 'Undo',
+  'toast.actionFailed': 'Action failed, please try again',
 
   // Stats page
   'statsPage.title': 'Stats',
@@ -336,6 +361,8 @@ const en: Dict = {
   'categoriesPage.cancel': 'Cancel',
   'categoriesPage.addCategory': 'Add category',
   'categoriesPage.addNew': 'Add new category',
+  'categoriesPage.editCategory': 'Edit category',
+  'categoriesPage.delete': 'Delete category',
 
   // Settings page
   'settingsPage.title': 'Settings',
@@ -374,6 +401,27 @@ const en: Dict = {
   'csv.note': 'Note',
   'csv.expense': 'Expense',
   'csv.income': 'Income',
+
+  // Savings goals
+  'goalsPage.title': 'Savings goals',
+  'goalsPage.empty': 'No savings goals yet',
+  'goalsPage.addFirst': 'Create your first goal',
+  'goalsPage.addNew': 'New goal',
+  'goalsPage.namePlaceholder': 'Goal name (e.g. New laptop)',
+  'goalsPage.targetAmount': 'Target amount',
+  'goalsPage.targetDateOptional': 'Target date (optional)',
+  'goalsPage.create': 'Create goal',
+  'goalsPage.completed': 'Completed 🎉',
+  'goalsPage.projected': (date: string) => `Projected to reach by ${date}`,
+  'goalsPage.noPaceYet': 'Add money to start tracking your pace',
+  'goalsPage.deposit': 'Deposit',
+  'goalsPage.withdraw': 'Withdraw',
+  'goalsPage.confirm': 'Confirm',
+  'goalsPage.deposited': (amount: string) => `Deposited ${amount}`,
+  'goalsPage.withdrawn': (amount: string) => `Withdrew ${amount}`,
+  'goalsPage.recentActivity': 'Recent activity',
+  'goalsPage.noActivity': 'No activity yet',
+  'goalsPage.delete': 'Delete goal',
 
   // App lock
   'lock.section': 'Security',

@@ -13,6 +13,7 @@ import Transactions from '@/pages/Transactions'
 import Stats from '@/pages/Stats'
 import Budgets from '@/pages/Budgets'
 import Categories from '@/pages/Categories'
+import Goals from '@/pages/Goals'
 import Settings from '@/pages/Settings'
 
 function AuthedApp() {
@@ -29,6 +30,7 @@ function AuthedApp() {
         <Route path="stats" element={<Stats />} />
         <Route path="budgets" element={<Budgets />} />
         <Route path="categories" element={<Categories />} />
+        <Route path="goals" element={<Goals />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

@@ -61,12 +61,12 @@ function NavItem({
         <>
           <Icon
             className={clsx(
-              'h-6 w-6 transition-colors duration-200',
+              'h-6 w-6 transition-colors duration-100',
               isActive ? 'text-brand-500' : 'text-ink-400'
             )}
             strokeWidth={isActive ? 2.4 : 2}
           />
-          <span className={clsx('transition-colors duration-200', isActive ? 'text-brand-500' : 'text-ink-400')}>
+          <span className={clsx('transition-colors duration-100', isActive ? 'text-brand-500' : 'text-ink-400')}>
             {label}
           </span>
         </>

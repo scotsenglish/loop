@@ -28,7 +28,6 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
   const [categoryId, setCategoryId] = useState<string | null>(null)
   const [note, setNote] = useState('')
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'))
-  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -87,21 +86,19 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
     }
   }
 
-  async function handleSave() {
+  // Fire-and-forget: Firestore's local cache (and this app's onSnapshot
+  // listeners) reflect the write immediately, so the sheet can close right
+  // away instead of waiting on the server round-trip. Failures still surface
+  // via a toast rather than being silently swallowed.
+  function handleSave() {
     const amount = parseInt(amountStr, 10) || 0
     if (amount <= 0 || !categoryId) return
-    setSaving(true)
-    try {
-      if (editing) {
-        await updateTransaction(editing.id, { type, amount, categoryId, note, date })
-      } else {
-        await addTransaction({ type, amount, categoryId, note, date })
-      }
-      if (type === 'expense') maybeWarnBudget(categoryId, amount, date)
-      onClose()
-    } finally {
-      setSaving(false)
-    }
+    const write = editing
+      ? updateTransaction(editing.id, { type, amount, categoryId, note, date })
+      : addTransaction({ type, amount, categoryId, note, date })
+    write.catch(() => showToast(t('toast.actionFailed')))
+    if (type === 'expense') maybeWarnBudget(categoryId, amount, date)
+    onClose()
   }
 
   function handleDelete() {
@@ -152,7 +149,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
           </div>
           <button
             onClick={handleSave}
-            disabled={!canSave || saving}
+            disabled={!canSave}
             className={clsx(
               'rounded-full p-2 transition',
               canSave ? 'bg-brand-500 text-white' : 'bg-ink-100 text-ink-300 dark:bg-ink-800'

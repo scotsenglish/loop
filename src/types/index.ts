@@ -28,6 +28,25 @@ export interface Budget {
   amount: number
 }
 
+export interface GoalContribution {
+  id: string
+  amount: number // positive = deposit, negative = withdrawal
+  date: string // yyyy-MM-dd
+  createdAt: number // epoch ms, used for pace projection
+}
+
+export interface SavingsGoal {
+  id: string
+  name: string
+  icon: string // emoji
+  color: string // hex
+  targetAmount: number
+  targetDate?: string | null // yyyy-MM-dd, optional
+  currentAmount: number
+  contributions: GoalContribution[]
+  createdAt: number
+}
+
 export type ThemePref = 'light' | 'dark' | 'system'
 
 export interface UserSettings {

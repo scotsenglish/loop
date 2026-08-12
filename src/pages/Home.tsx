@@ -17,8 +17,10 @@ import { AnimatedNumber } from '@/components/AnimatedNumber'
 import { EmptyState } from '@/components/EmptyState'
 import { HabitHeatmap } from '@/components/HabitHeatmap'
 import { PullToRefresh } from '@/components/PullToRefresh'
+import { GoalProgressBar } from '@/components/GoalProgressBar'
 import { formatVND } from '@/lib/format'
 import { localizeCategoryName } from '@/lib/i18n'
+import { goalProgress, isGoalComplete } from '@/lib/goals'
 import { categoryBreakdown, dailyTrend, monthKey, monthTransactions, previousMonthKey, sumByType } from '@/lib/stats'
 import type { Transaction } from '@/types'
 
@@ -26,7 +28,7 @@ const COLLAPSE_RANGE = 60
 
 export default function Home() {
   const { user } = useAuth()
-  const { transactions, categories, settings } = useData()
+  const { transactions, categories, settings, goals } = useData()
   const { t, lang } = useLanguage()
   const { showBanner } = useReminder(settings)
   const scrollY = useScrollY()
@@ -51,6 +53,12 @@ export default function Home() {
 
   const firstName = user?.displayName?.split(' ').slice(-1)[0] ?? ''
   const collapseProgress = Math.min(1, scrollY / COLLAPSE_RANGE)
+
+  const nearestGoal = useMemo(() => {
+    const active = goals.filter((g) => !isGoalComplete(g))
+    if (active.length === 0) return null
+    return [...active].sort((a, b) => goalProgress(b) - goalProgress(a))[0]
+  }, [goals])
 
   return (
     <>
@@ -130,6 +138,18 @@ export default function Home() {
               <AnimatedNumber value={balance} formatter={formatVND} />
             </span>
           </div>
+
+          {nearestGoal && (
+            <Link to="/goals" className="card-surface mt-3 block rounded-2xl p-4 shadow-soft">
+              <div className="mb-2 flex items-center justify-between">
+                <h2 className="font-display text-sm font-bold text-ink-800 dark:text-white">
+                  {t('goalsPage.title')}
+                </h2>
+                <span className="text-xs font-semibold text-brand-500">{t('home.viewAll')}</span>
+              </div>
+              <GoalProgressBar goal={nearestGoal} />
+            </Link>
+          )}
 
           <section className="card-surface mt-4 rounded-2xl p-4 shadow-soft">
             <h2 className="font-display text-sm font-bold text-ink-800 dark:text-white">

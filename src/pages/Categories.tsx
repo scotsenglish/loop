@@ -4,21 +4,15 @@ import { ChevronLeft, Plus, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
 import { useData } from '@/context/DataContext'
 import { useLanguage } from '@/context/LanguageContext'
+import { useToast } from '@/context/ToastContext'
+import { EMOJI_CHOICES, COLOR_CHOICES } from '@/lib/pickerOptions'
 import type { TransactionType } from '@/types'
-
-const EMOJI_CHOICES = [
-  '🍜', '🚗', '🛍️', '💡', '🏠', '💊', '🎬', '📚', '✈️', '🎁', '💰', '🔖',
-  '💼', '🎉', '📈', '💵', '🐶', '👶', '⚽', '☕️', '🎮', '📱', '🧾', '🚕',
-]
-const COLOR_CHOICES = [
-  '#F59E0B', '#3B82F6', '#EC4899', '#F43F5E', '#8B5CF6', '#10B981',
-  '#A855F7', '#06B6D4', '#0EA5E9', '#F97316', '#059669', '#6B7280',
-]
 
 export default function Categories() {
   const navigate = useNavigate()
   const { t } = useLanguage()
   const { categories, addCategory, updateCategory, deleteCategory } = useData()
+  const { showToast } = useToast()
   const [tab, setTab] = useState<TransactionType>('expense')
   const [creating, setCreating] = useState(false)
   const [name, setName] = useState('')
@@ -27,9 +21,13 @@ export default function Categories() {
 
   const list = categories.filter((c) => c.type === tab || c.type === 'both')
 
-  async function handleCreate() {
+  // Fire-and-forget — closing the create panel doesn't need to wait for the
+  // server round-trip since the local list already updates from cache.
+  function handleCreate() {
     if (!name.trim()) return
-    await addCategory({ name: name.trim(), icon, color, type: tab, order: list.length })
+    addCategory({ name: name.trim(), icon, color, type: tab, order: list.length }).catch(() =>
+      showToast(t('toast.actionFailed'))
+    )
     setCreating(false)
     setName('')
   }
@@ -78,14 +76,16 @@ export default function Categories() {
               defaultValue={c.name}
               onBlur={(e) => {
                 if (e.target.value.trim() && e.target.value !== c.name) {
-                  updateCategory(c.id, { name: e.target.value.trim() })
+                  updateCategory(c.id, { name: e.target.value.trim() }).catch(() =>
+                    showToast(t('toast.actionFailed'))
+                  )
                 }
               }}
               className="flex-1 bg-transparent text-sm font-semibold text-ink-800 outline-none dark:text-white"
             />
             {c.isCustom && (
               <button
-                onClick={() => deleteCategory(c.id)}
+                onClick={() => deleteCategory(c.id).catch(() => showToast(t('toast.actionFailed')))}
                 className="rounded-lg p-1.5 text-ink-300 active:bg-rose-50 active:text-rose-500 dark:active:bg-rose-500/10"
               >
                 <Trash2 className="h-4 w-4" />

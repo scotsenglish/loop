@@ -10,10 +10,12 @@ import {
   orderBy,
   writeBatch,
   serverTimestamp,
+  arrayUnion,
+  increment,
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
-import type { Budget, Category, Transaction, UserSettings } from '@/types'
+import type { Budget, Category, GoalContribution, SavingsGoal, Transaction, UserSettings } from '@/types'
 import { DEFAULT_SETTINGS } from '@/types'
 import { ALL_DEFAULT_CATEGORIES } from '@/lib/defaultCategories'
 
@@ -21,6 +23,7 @@ const userDoc = (uid: string) => doc(db, 'users', uid)
 const transactionsCol = (uid: string) => collection(db, 'users', uid, 'transactions')
 const categoriesCol = (uid: string) => collection(db, 'users', uid, 'categories')
 const budgetsCol = (uid: string) => collection(db, 'users', uid, 'budgets')
+const goalsCol = (uid: string) => collection(db, 'users', uid, 'goals')
 
 // ---------- Bootstrap ----------
 export async function ensureUserInitialized(uid: string, email: string | null) {
@@ -74,6 +77,12 @@ export function subscribeBudgets(uid: string, cb: (items: Budget[]) => void): Un
   })
 }
 
+export function subscribeGoals(uid: string, cb: (items: SavingsGoal[]) => void): Unsubscribe {
+  return onSnapshot(goalsCol(uid), (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SavingsGoal, 'id'>) })))
+  })
+}
+
 // ---------- Transactions ----------
 export async function addTransaction(uid: string, tx: Omit<Transaction, 'id'>) {
   await addDoc(transactionsCol(uid), tx)
@@ -117,6 +126,29 @@ export async function upsertBudget(uid: string, categoryId: string, month: strin
 
 export async function deleteBudget(uid: string, id: string) {
   await deleteDoc(doc(budgetsCol(uid), id))
+}
+
+// ---------- Savings goals ----------
+export async function addGoal(uid: string, goal: Omit<SavingsGoal, 'id'>) {
+  await addDoc(goalsCol(uid), goal)
+}
+
+export async function updateGoal(uid: string, id: string, patch: Partial<SavingsGoal>) {
+  await updateDoc(doc(goalsCol(uid), id), patch)
+}
+
+export async function deleteGoal(uid: string, id: string) {
+  await deleteDoc(doc(goalsCol(uid), id))
+}
+
+/** Atomically appends a contribution and adjusts the running total — using
+ *  arrayUnion/increment instead of read-then-write avoids clobbering a
+ *  contribution made from another tab/device at nearly the same time. */
+export async function contributeToGoal(uid: string, goalId: string, contribution: GoalContribution) {
+  await updateDoc(doc(goalsCol(uid), goalId), {
+    contributions: arrayUnion(contribution),
+    currentAmount: increment(contribution.amount),
+  })
 }
 
 // ---------- Settings ----------

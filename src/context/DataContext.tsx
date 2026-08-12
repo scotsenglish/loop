@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { format } from 'date-fns'
 import { useAuth } from '@/context/AuthContext'
-import type { Budget, Category, Transaction, UserSettings } from '@/types'
+import type { Budget, Category, GoalContribution, SavingsGoal, Transaction, UserSettings } from '@/types'
 import { DEFAULT_SETTINGS } from '@/types'
 import {
   addTransaction as apiAddTransaction,
@@ -13,19 +13,33 @@ import {
   deleteCategory as apiDeleteCategory,
   upsertBudget as apiUpsertBudget,
   deleteBudget as apiDeleteBudget,
+  addGoal as apiAddGoal,
+  updateGoal as apiUpdateGoal,
+  deleteGoal as apiDeleteGoal,
+  contributeToGoal as apiContributeToGoal,
   updateSettings as apiUpdateSettings,
   subscribeTransactions,
   subscribeCategories,
   subscribeBudgets,
+  subscribeGoals,
   subscribeSettings,
 } from '@/lib/firestoreApi'
 import { computeNextStreak } from '@/lib/streak'
+
+type NewGoal = {
+  name: string
+  icon: string
+  color: string
+  targetAmount: number
+  targetDate?: string | null
+}
 
 interface DataContextValue {
   ready: boolean
   transactions: Transaction[]
   categories: Category[]
   budgets: Budget[]
+  goals: SavingsGoal[]
   settings: UserSettings
   addTransaction: (tx: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>
   updateTransaction: (id: string, patch: Partial<Transaction>) => Promise<void>
@@ -40,6 +54,10 @@ interface DataContextValue {
   deleteCategory: (id: string) => Promise<void>
   setBudget: (categoryId: string, month: string, amount: number) => Promise<void>
   removeBudget: (id: string) => Promise<void>
+  addGoal: (goal: NewGoal) => Promise<void>
+  updateGoal: (id: string, patch: Partial<NewGoal>) => Promise<void>
+  deleteGoal: (id: string) => Promise<void>
+  contributeToGoal: (goalId: string, amount: number, date: string) => Promise<void>
   updateSettings: (patch: Partial<UserSettings>) => Promise<void>
 }
 
@@ -52,6 +70,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [budgets, setBudgets] = useState<Budget[]>([])
+  const [goals, setGoals] = useState<SavingsGoal[]>([])
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
   const [ready, setReady] = useState(false)
   const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set())
@@ -62,6 +81,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setTransactions([])
       setCategories([])
       setBudgets([])
+      setGoals([])
       setSettings(DEFAULT_SETTINGS)
       setReady(false)
       // Drop any in-flight undo timers — the signed-out user's transactions
@@ -76,6 +96,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       subscribeTransactions(user.uid, setTransactions),
       subscribeCategories(user.uid, setCategories),
       subscribeBudgets(user.uid, setBudgets),
+      subscribeGoals(user.uid, setGoals),
       subscribeSettings(user.uid, (s) => {
         setSettings(s)
         setReady(true)
@@ -133,11 +154,34 @@ export function DataProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  async function addGoal(goal: NewGoal) {
+    if (!user) return
+    await apiAddGoal(user.uid, {
+      ...goal,
+      targetDate: goal.targetDate ?? null,
+      currentAmount: 0,
+      contributions: [],
+      createdAt: Date.now(),
+    })
+  }
+
+  async function contributeToGoal(goalId: string, amount: number, date: string) {
+    if (!user) return
+    const contribution: GoalContribution = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      amount,
+      date,
+      createdAt: Date.now(),
+    }
+    await apiContributeToGoal(user.uid, goalId, contribution)
+  }
+
   const value: DataContextValue = {
     ready,
     transactions: transactions.filter((t) => !pendingDeleteIds.has(t.id)),
     categories,
     budgets,
+    goals,
     settings,
     addTransaction,
     updateTransaction: (id, patch) => (user ? apiUpdateTransaction(user.uid, id, patch) : Promise.resolve()),
@@ -150,6 +194,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setBudget: (categoryId, month, amount) =>
       user ? apiUpsertBudget(user.uid, categoryId, month, amount) : Promise.resolve(),
     removeBudget: (id) => (user ? apiDeleteBudget(user.uid, id) : Promise.resolve()),
+    addGoal,
+    updateGoal: (id, patch) => (user ? apiUpdateGoal(user.uid, id, patch) : Promise.resolve()),
+    deleteGoal: (id) => (user ? apiDeleteGoal(user.uid, id) : Promise.resolve()),
+    contributeToGoal,
     updateSettings: (patch) => (user ? apiUpdateSettings(user.uid, patch) : Promise.resolve()),
   }
 
