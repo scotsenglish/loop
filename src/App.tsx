@@ -4,6 +4,7 @@ import { useData } from '@/context/DataContext'
 import { useLock } from '@/context/LockContext'
 import { useTheme } from '@/hooks/useTheme'
 import { LoadingScreen } from '@/components/LoadingScreen'
+import { HomeSkeleton } from '@/components/HomeSkeleton'
 import { LockScreen } from '@/components/LockScreen'
 import { Layout } from '@/components/Layout'
 import Login from '@/pages/Login'
@@ -18,7 +19,7 @@ function AuthedApp() {
   const { settings, ready } = useData()
   useTheme(settings.theme)
 
-  if (!ready) return <LoadingScreen />
+  if (!ready) return <HomeSkeleton />
 
   return (
     <Routes>

@@ -7,6 +7,7 @@ import { useToast } from '@/context/ToastContext'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { TransactionRow } from '@/components/TransactionRow'
 import { AddTransactionSheet } from '@/components/AddTransactionSheet'
+import { EmptyState } from '@/components/EmptyState'
 import { formatVND } from '@/lib/format'
 import { groupByDay, monthKey, monthTransactions, sumByType } from '@/lib/stats'
 import type { Transaction } from '@/types'
@@ -127,9 +128,7 @@ export default function Transactions() {
       </div>
 
       <div className="mt-4 space-y-4 pb-24">
-        {grouped.length === 0 && (
-          <p className="py-10 text-center text-sm text-ink-400">{t('txPage.noneMatch')}</p>
-        )}
+        {grouped.length === 0 && <EmptyState icon="🔍" title={t('txPage.noneMatch')} />}
         {grouped.map((g) => (
           <div key={g.date}>
             <p className="mb-1 px-1 text-xs font-semibold text-ink-400">

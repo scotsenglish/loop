@@ -6,6 +6,8 @@ import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { CategoryDonut } from '@/components/CategoryDonut'
 import { YearlyBarChart } from '@/components/YearlyBarChart'
 import { BudgetProgressBar } from '@/components/BudgetProgressBar'
+import { AnimatedNumber } from '@/components/AnimatedNumber'
+import { EmptyState } from '@/components/EmptyState'
 import { formatVND } from '@/lib/format'
 import { localizeCategoryName } from '@/lib/i18n'
 import {
@@ -80,7 +82,9 @@ export default function Stats() {
           <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
             <div className="card-surface rounded-2xl p-3 shadow-soft">
               <p className="text-[11px] text-ink-400">{t('statsPage.totalExpense')}</p>
-              <p className="font-display text-lg font-extrabold text-rose-500">{formatVND(totalExpense)}</p>
+              <p className="font-display text-lg font-extrabold text-rose-500">
+                <AnimatedNumber value={totalExpense} formatter={formatVND} />
+              </p>
               {prevExpense > 0 && (
                 <p className="text-[11px] text-ink-400">
                   {delta >= 0 ? '+' : ''}
@@ -90,7 +94,9 @@ export default function Stats() {
             </div>
             <div className="card-surface rounded-2xl p-3 shadow-soft">
               <p className="text-[11px] text-ink-400">{t('statsPage.totalIncome')}</p>
-              <p className="font-display text-lg font-extrabold text-mint-600">{formatVND(totalIncome)}</p>
+              <p className="font-display text-lg font-extrabold text-mint-600">
+                <AnimatedNumber value={totalIncome} formatter={formatVND} />
+              </p>
             </div>
           </div>
 
@@ -119,9 +125,7 @@ export default function Stats() {
                   </div>
                 </div>
               ))}
-              {breakdown.length === 0 && (
-                <p className="py-4 text-center text-sm text-ink-400">{t('statsPage.noExpenseThisMonth')}</p>
-              )}
+              {breakdown.length === 0 && <EmptyState icon="📊" title={t('statsPage.noExpenseThisMonth')} />}
             </div>
           </section>
 
@@ -168,11 +172,15 @@ export default function Stats() {
           <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
             <div className="card-surface rounded-2xl p-3 shadow-soft">
               <p className="text-[11px] text-ink-400">{t('statsPage.totalExpenseYear')}</p>
-              <p className="font-display text-lg font-extrabold text-rose-500">{formatVND(yearExpense)}</p>
+              <p className="font-display text-lg font-extrabold text-rose-500">
+                <AnimatedNumber value={yearExpense} formatter={formatVND} />
+              </p>
             </div>
             <div className="card-surface rounded-2xl p-3 shadow-soft">
               <p className="text-[11px] text-ink-400">{t('statsPage.totalIncomeYear')}</p>
-              <p className="font-display text-lg font-extrabold text-mint-600">{formatVND(yearIncome)}</p>
+              <p className="font-display text-lg font-extrabold text-mint-600">
+                <AnimatedNumber value={yearIncome} formatter={formatVND} />
+              </p>
             </div>
           </div>
 
@@ -202,9 +210,7 @@ export default function Stats() {
                   <span className="font-semibold text-ink-800 dark:text-white">{formatVND(b.total)}</span>
                 </div>
               ))}
-              {yearBreakdown.length === 0 && (
-                <p className="py-4 text-center text-sm text-ink-400">{t('statsPage.noDataYear', year)}</p>
-              )}
+              {yearBreakdown.length === 0 && <EmptyState icon="📊" title={t('statsPage.noDataYear', year)} />}
             </div>
           </section>
         </>

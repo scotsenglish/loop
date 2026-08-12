@@ -68,6 +68,7 @@ const vi: Dict = {
   'common.noData': 'Chưa có dữ liệu để hiển thị',
   'common.other': 'Khác',
   'common.totalExpense': 'Tổng chi',
+  'common.upToDate': 'Đã cập nhật',
 
   // Home
   'home.greeting': 'Xin chào,',
@@ -82,6 +83,12 @@ const vi: Dict = {
   'home.recentTx': 'Giao dịch gần đây',
   'home.viewAll': 'Xem tất cả',
   'home.noTx': 'Chưa có giao dịch nào',
+  'home.addFirstTx': 'Thêm giao dịch đầu tiên',
+  'home.habitSection': 'Thói quen ghi chép',
+
+  // Habit heatmap
+  'heatmap.less': 'Ít hơn',
+  'heatmap.more': 'Nhiều hơn',
 
   // Transactions page
   'txPage.title': 'Giao dịch',
@@ -256,6 +263,7 @@ const en: Dict = {
   'common.noData': 'No data to display yet',
   'common.other': 'Other',
   'common.totalExpense': 'Total spent',
+  'common.upToDate': 'Up to date',
 
   // Home
   'home.greeting': 'Hello,',
@@ -270,6 +278,12 @@ const en: Dict = {
   'home.recentTx': 'Recent transactions',
   'home.viewAll': 'View all',
   'home.noTx': 'No transactions yet',
+  'home.addFirstTx': 'Add your first transaction',
+  'home.habitSection': 'Logging habit',
+
+  // Habit heatmap
+  'heatmap.less': 'Less',
+  'heatmap.more': 'More',
 
   // Transactions page
   'txPage.title': 'Transactions',

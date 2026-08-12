@@ -9,7 +9,7 @@ export function StatCard({
   tone = 'default',
 }: {
   label: string
-  value: string
+  value: ReactNode
   sub?: string
   icon?: ReactNode
   tone?: 'default' | 'positive' | 'negative'
