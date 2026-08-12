@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Plus, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
 import { useData } from '@/context/DataContext'
+import { useLanguage } from '@/context/LanguageContext'
 import type { TransactionType } from '@/types'
 
 const EMOJI_CHOICES = [
@@ -16,6 +17,7 @@ const COLOR_CHOICES = [
 
 export default function Categories() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const { categories, addCategory, updateCategory, deleteCategory } = useData()
   const [tab, setTab] = useState<TransactionType>('expense')
   const [creating, setCreating] = useState(false)
@@ -38,14 +40,16 @@ export default function Categories() {
         <button onClick={() => navigate(-1)} className="rounded-full p-1.5 active:bg-ink-100 dark:active:bg-ink-800">
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">Danh mục</h1>
+        <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">
+          {t('categoriesPage.title')}
+        </h1>
       </div>
 
       <div className="mt-4 flex rounded-full bg-white p-1 shadow-soft dark:bg-ink-900">
         {(
           [
-            ['expense', 'Chi tiêu'],
-            ['income', 'Thu nhập'],
+            ['expense', t('categoriesPage.expense')],
+            ['income', t('categoriesPage.income')],
           ] as [TransactionType, string][]
         ).map(([v, l]) => (
           <button
@@ -97,10 +101,10 @@ export default function Categories() {
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Tên danh mục"
+            placeholder={t('categoriesPage.namePlaceholder')}
             className="w-full rounded-xl border border-ink-200 bg-ink-50 px-3 py-2 text-sm dark:border-ink-700 dark:bg-ink-800"
           />
-          <p className="mb-1.5 mt-3 text-xs font-medium text-ink-400">Biểu tượng</p>
+          <p className="mb-1.5 mt-3 text-xs font-medium text-ink-400">{t('categoriesPage.icon')}</p>
           <div className="flex flex-wrap gap-2">
             {EMOJI_CHOICES.map((e) => (
               <button
@@ -115,7 +119,7 @@ export default function Categories() {
               </button>
             ))}
           </div>
-          <p className="mb-1.5 mt-3 text-xs font-medium text-ink-400">Màu sắc</p>
+          <p className="mb-1.5 mt-3 text-xs font-medium text-ink-400">{t('categoriesPage.color')}</p>
           <div className="flex flex-wrap gap-2">
             {COLOR_CHOICES.map((c) => (
               <button
@@ -134,13 +138,13 @@ export default function Categories() {
               onClick={() => setCreating(false)}
               className="flex-1 rounded-xl bg-ink-100 py-2.5 text-sm font-semibold text-ink-600 dark:bg-ink-800 dark:text-ink-200"
             >
-              Huỷ
+              {t('categoriesPage.cancel')}
             </button>
             <button
               onClick={handleCreate}
               className="flex-1 rounded-xl bg-brand-500 py-2.5 text-sm font-semibold text-white"
             >
-              Thêm danh mục
+              {t('categoriesPage.addCategory')}
             </button>
           </div>
         </div>
@@ -149,7 +153,7 @@ export default function Categories() {
           onClick={() => setCreating(true)}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink-200 py-3 text-sm font-semibold text-ink-400 dark:border-ink-700"
         >
-          <Plus className="h-4 w-4" /> Thêm danh mục mới
+          <Plus className="h-4 w-4" /> {t('categoriesPage.addNew')}
         </button>
       )}
     </div>

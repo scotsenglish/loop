@@ -3,7 +3,9 @@ import { format } from 'date-fns'
 import { X, Check } from 'lucide-react'
 import clsx from 'clsx'
 import { useData } from '@/context/DataContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { formatNumber } from '@/lib/format'
+import { localizeCategoryName } from '@/lib/i18n'
 import { NumericKeypad } from '@/components/NumericKeypad'
 import type { Transaction, TransactionType } from '@/types'
 
@@ -17,6 +19,7 @@ interface Props {
 
 export function AddTransactionSheet({ open, onClose, editing }: Props) {
   const { categories, addTransaction, updateTransaction, deleteTransaction } = useData()
+  const { t, lang } = useLanguage()
   const [type, setType] = useState<TransactionType>('expense')
   const [amountStr, setAmountStr] = useState('0')
   const [categoryId, setCategoryId] = useState<string | null>(null)
@@ -103,7 +106,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
                 type === 'expense' ? 'bg-rose-500 text-white' : 'text-ink-500'
               )}
             >
-              Chi tiêu
+              {t('tx.expense')}
             </button>
             <button
               onClick={() => {
@@ -115,7 +118,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
                 type === 'income' ? 'bg-mint-500 text-white' : 'text-ink-500'
               )}
             >
-              Thu nhập
+              {t('tx.income')}
             </button>
           </div>
           <button
@@ -155,7 +158,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
                   {c.icon}
                 </span>
                 <span className="max-w-[64px] truncate text-[11px] font-medium text-ink-600 dark:text-ink-200">
-                  {c.name}
+                  {localizeCategoryName(c.name, lang)}
                 </span>
               </button>
             ))}
@@ -173,7 +176,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Ghi chú (tuỳ chọn)"
+              placeholder={t('tx.notePlaceholder')}
               className="flex-[2] rounded-xl border border-ink-100 bg-ink-50 px-3 py-2.5 text-sm text-ink-700 placeholder:text-ink-400 dark:border-ink-800 dark:bg-ink-800 dark:text-ink-100"
             />
           </div>
@@ -187,7 +190,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
               onClick={handleDelete}
               className="mt-4 w-full rounded-2xl bg-rose-50 py-3 text-sm font-semibold text-rose-600 dark:bg-rose-500/10"
             >
-              Xoá giao dịch
+              {t('tx.delete')}
             </button>
           )}
         </div>

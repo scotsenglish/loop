@@ -1,6 +1,8 @@
 import { Flame, ArrowRight } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 export function ReminderBanner({ streak, onAdd }: { streak: number; onAdd: () => void }) {
+  const { t } = useLanguage()
   return (
     <button
       onClick={onAdd}
@@ -8,11 +10,9 @@ export function ReminderBanner({ streak, onAdd }: { streak: number; onAdd: () =>
     >
       <Flame className="h-8 w-8 shrink-0 drop-shadow" />
       <div className="flex-1">
-        <p className="text-sm font-bold">Hôm nay bạn chưa ghi chi tiêu nào</p>
+        <p className="text-sm font-bold">{t('reminder.title')}</p>
         <p className="text-xs text-white/85">
-          {streak > 0
-            ? `Đừng để đứt chuỗi ${streak} ngày liên tiếp nhé!`
-            : 'Ghi lại ngay để bắt đầu chuỗi thói quen của bạn.'}
+          {streak > 0 ? t('reminder.streakWarning', streak) : t('reminder.startStreak')}
         </p>
       </div>
       <ArrowRight className="h-5 w-5 shrink-0" />

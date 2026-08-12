@@ -15,13 +15,16 @@ import {
 import clsx from 'clsx'
 import { useAuth } from '@/context/AuthContext'
 import { useData } from '@/context/DataContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { exportTransactionsCSV, exportTransactionsJSON } from '@/lib/exportData'
 import { enablePush } from '@/lib/push'
+import type { Lang } from '@/lib/i18n'
 import type { ThemePref } from '@/types'
 
 export default function Settings() {
   const { user, signOut } = useAuth()
   const { settings, updateSettings, transactions, categories } = useData()
+  const { t, lang, setLang } = useLanguage()
   const [pushBusy, setPushBusy] = useState(false)
 
   async function togglePush(next: boolean) {
@@ -45,7 +48,7 @@ export default function Settings() {
 
   return (
     <div className="px-4 pt-6 pb-10">
-      <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">Cài đặt</h1>
+      <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">{t('settingsPage.title')}</h1>
 
       <div className="card-surface mt-4 flex items-center gap-3 rounded-2xl p-4 shadow-soft">
         {user?.photoURL ? (
@@ -57,7 +60,7 @@ export default function Settings() {
         )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-ink-800 dark:text-white">
-            {user?.displayName ?? 'Người dùng Loop'}
+            {user?.displayName ?? t('settingsPage.defaultUser')}
           </p>
           <p className="truncate text-xs text-ink-400">{user?.email}</p>
         </div>
@@ -66,27 +69,27 @@ export default function Settings() {
       <div className="mt-3 flex items-center justify-between rounded-2xl bg-gradient-to-r from-amber-400 to-rose-400 p-4 text-white shadow-soft">
         <div className="flex items-center gap-2">
           <Flame className="h-5 w-5" />
-          <span className="text-sm font-semibold">Chuỗi ghi chép hiện tại</span>
+          <span className="text-sm font-semibold">{t('settingsPage.currentStreak')}</span>
         </div>
         <div className="text-right">
-          <p className="font-display text-lg font-extrabold">{settings.streakCount} ngày</p>
-          <p className="text-[11px] text-white/80">Kỷ lục: {settings.bestStreak} ngày</p>
+          <p className="font-display text-lg font-extrabold">{t('settingsPage.days', settings.streakCount)}</p>
+          <p className="text-[11px] text-white/80">{t('settingsPage.bestStreak', settings.bestStreak)}</p>
         </div>
       </div>
 
-      <SectionTitle>Nhắc nhở & thói quen</SectionTitle>
+      <SectionTitle>{t('settingsPage.reminderSection')}</SectionTitle>
       <div className="card-surface divide-y divide-ink-100 rounded-2xl shadow-soft dark:divide-ink-800">
         <Row
           icon={<Bell className="h-5 w-5 text-brand-500" />}
-          label="Nhắc trong app"
-          desc="Banner + thông báo cục bộ khi mở app"
+          label={t('settingsPage.reminderInApp')}
+          desc={t('settingsPage.reminderInAppDesc')}
         >
           <Toggle
             checked={settings.reminderEnabled}
             onChange={(v) => updateSettings({ reminderEnabled: v })}
           />
         </Row>
-        <Row icon={<span className="w-5" />} label="Giờ nhắc" desc="Mỗi ngày">
+        <Row icon={<span className="w-5" />} label={t('settingsPage.reminderTime')} desc={t('settingsPage.everyDay')}>
           <input
             type="time"
             value={settings.reminderTime}
@@ -96,38 +99,38 @@ export default function Settings() {
         </Row>
         <Row
           icon={<Bell className="h-5 w-5 text-accent-500" />}
-          label="Push nâng cao"
-          desc="Nhắc kể cả khi đã đóng app (cần cấu hình Firebase Cloud Messaging)"
+          label={t('settingsPage.pushAdvanced')}
+          desc={t('settingsPage.pushAdvancedDesc')}
         >
           <Toggle checked={settings.pushEnabled} onChange={togglePush} disabled={pushBusy} />
         </Row>
       </div>
 
-      <SectionTitle>Quản lý</SectionTitle>
+      <SectionTitle>{t('settingsPage.manageSection')}</SectionTitle>
       <div className="card-surface divide-y divide-ink-100 rounded-2xl shadow-soft dark:divide-ink-800">
         <Link to="/budgets" className="flex items-center gap-3 px-4 py-3.5">
           <PiggyBank className="h-5 w-5 text-brand-500" />
           <span className="flex-1 text-sm font-medium text-ink-700 dark:text-ink-100">
-            Ngân sách theo danh mục
+            {t('settingsPage.budgetsByCategory')}
           </span>
           <ChevronRight className="h-4 w-4 text-ink-300" />
         </Link>
         <Link to="/categories" className="flex items-center gap-3 px-4 py-3.5">
           <Tag className="h-5 w-5 text-brand-500" />
           <span className="flex-1 text-sm font-medium text-ink-700 dark:text-ink-100">
-            Danh mục chi tiêu / thu nhập
+            {t('settingsPage.categoriesLink')}
           </span>
           <ChevronRight className="h-4 w-4 text-ink-300" />
         </Link>
       </div>
 
-      <SectionTitle>Giao diện</SectionTitle>
+      <SectionTitle>{t('settingsPage.appearanceSection')}</SectionTitle>
       <div className="card-surface flex gap-2 rounded-2xl p-2 shadow-soft">
         {(
           [
-            ['light', 'Sáng', Sun],
-            ['dark', 'Tối', Moon],
-            ['system', 'Tự động', SunMoon],
+            ['light', t('settingsPage.light'), Sun],
+            ['dark', t('settingsPage.dark'), Moon],
+            ['system', t('settingsPage.system'), SunMoon],
           ] as [ThemePref, string, typeof Sun][]
         ).map(([value, label, Icon]) => (
           <button
@@ -146,15 +149,36 @@ export default function Settings() {
         ))}
       </div>
 
-      <SectionTitle>Dữ liệu</SectionTitle>
+      <SectionTitle>{t('settingsPage.languageSection')}</SectionTitle>
+      <div className="card-surface flex gap-2 rounded-2xl p-2 shadow-soft">
+        {(
+          [
+            ['vi', t('settingsPage.langVi')],
+            ['en', t('settingsPage.langEn')],
+          ] as [Lang, string][]
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            onClick={() => setLang(value)}
+            className={clsx(
+              'flex-1 rounded-xl py-2.5 text-xs font-semibold transition',
+              lang === value ? 'bg-brand-500 text-white' : 'text-ink-500 dark:text-ink-300'
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <SectionTitle>{t('settingsPage.dataSection')}</SectionTitle>
       <div className="card-surface divide-y divide-ink-100 rounded-2xl shadow-soft dark:divide-ink-800">
         <button
-          onClick={() => exportTransactionsCSV(transactions, categories)}
+          onClick={() => exportTransactionsCSV(transactions, categories, lang)}
           className="flex w-full items-center gap-3 px-4 py-3.5"
         >
           <Download className="h-5 w-5 text-brand-500" />
           <span className="flex-1 text-left text-sm font-medium text-ink-700 dark:text-ink-100">
-            Xuất CSV
+            {t('settingsPage.exportCsv')}
           </span>
         </button>
         <button
@@ -163,7 +187,7 @@ export default function Settings() {
         >
           <Download className="h-5 w-5 text-brand-500" />
           <span className="flex-1 text-left text-sm font-medium text-ink-700 dark:text-ink-100">
-            Xuất JSON (sao lưu đầy đủ)
+            {t('settingsPage.exportJson')}
           </span>
         </button>
       </div>
@@ -172,10 +196,10 @@ export default function Settings() {
         onClick={signOut}
         className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-50 py-3 text-sm font-semibold text-rose-600 dark:bg-rose-500/10"
       >
-        <LogOut className="h-4 w-4" /> Đăng xuất
+        <LogOut className="h-4 w-4" /> {t('settingsPage.signOut')}
       </button>
 
-      <p className="mt-6 text-center text-[11px] text-ink-300">Loop · phiên bản 1.0</p>
+      <p className="mt-6 text-center text-[11px] text-ink-300">{t('settingsPage.version')}</p>
     </div>
   )
 }
@@ -227,8 +251,8 @@ function Toggle({
     >
       <span
         className={clsx(
-          'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform',
-          checked ? 'translate-x-[22px]' : 'translate-x-0.5'
+          'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform',
+          checked ? 'translate-x-[22px]' : 'translate-x-0'
         )}
       />
     </button>

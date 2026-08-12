@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import clsx from 'clsx'
 import { useData } from '@/context/DataContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { TransactionRow } from '@/components/TransactionRow'
 import { AddTransactionSheet } from '@/components/AddTransactionSheet'
@@ -13,6 +14,7 @@ type Filter = 'all' | 'expense' | 'income'
 
 export default function Transactions() {
   const { transactions, categories } = useData()
+  const { t } = useLanguage()
   const [month, setMonth] = useState(monthKey(new Date()))
   const [filter, setFilter] = useState<Filter>('all')
   const [search, setSearch] = useState('')
@@ -36,9 +38,15 @@ export default function Transactions() {
   const totalExpense = sumByType(filtered, 'expense')
   const totalIncome = sumByType(filtered, 'income')
 
+  const filters: [Filter, string][] = [
+    ['all', t('txPage.filterAll')],
+    ['expense', t('txPage.filterExpense')],
+    ['income', t('txPage.filterIncome')],
+  ]
+
   return (
     <div className="px-4 pt-6">
-      <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">Giao dịch</h1>
+      <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">{t('txPage.title')}</h1>
 
       <div className="mt-4">
         <MonthSwitcher month={month} onChange={setMonth} />
@@ -46,11 +54,11 @@ export default function Transactions() {
 
       <div className="mt-3 flex gap-2 text-sm">
         <div className="flex-1 rounded-xl bg-rose-50 px-3 py-2 dark:bg-rose-500/10">
-          <p className="text-[11px] text-rose-500">Chi</p>
+          <p className="text-[11px] text-rose-500">{t('txPage.expenseShort')}</p>
           <p className="font-bold text-rose-600">{formatVND(totalExpense)}</p>
         </div>
         <div className="flex-1 rounded-xl bg-mint-50 px-3 py-2 dark:bg-mint-500/10">
-          <p className="text-[11px] text-mint-600">Thu</p>
+          <p className="text-[11px] text-mint-600">{t('txPage.incomeShort')}</p>
           <p className="font-bold text-mint-700 dark:text-mint-400">{formatVND(totalIncome)}</p>
         </div>
       </div>
@@ -60,19 +68,13 @@ export default function Transactions() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Tìm theo danh mục hoặc ghi chú"
+          placeholder={t('txPage.searchPlaceholder')}
           className="w-full bg-transparent text-sm outline-none placeholder:text-ink-400"
         />
       </div>
 
       <div className="mt-3 flex gap-2">
-        {(
-          [
-            ['all', 'Tất cả'],
-            ['expense', 'Chi tiêu'],
-            ['income', 'Thu nhập'],
-          ] as [Filter, string][]
-        ).map(([value, label]) => (
+        {filters.map(([value, label]) => (
           <button
             key={value}
             onClick={() => setFilter(value)}
@@ -90,12 +92,12 @@ export default function Transactions() {
 
       <div className="mt-4 space-y-4 pb-6">
         {grouped.length === 0 && (
-          <p className="py-10 text-center text-sm text-ink-400">Không có giao dịch nào phù hợp</p>
+          <p className="py-10 text-center text-sm text-ink-400">{t('txPage.noneMatch')}</p>
         )}
         {grouped.map((g) => (
           <div key={g.date}>
             <p className="mb-1 px-1 text-xs font-semibold text-ink-400">
-              {new Date(`${g.date}T00:00:00`).toLocaleDateString('vi-VN', {
+              {new Date(`${g.date}T00:00:00`).toLocaleDateString(t('locale.code'), {
                 weekday: 'long',
                 day: '2-digit',
                 month: '2-digit',

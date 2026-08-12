@@ -1,6 +1,8 @@
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import type { CategoryBreakdownItem } from '@/lib/stats'
 import { formatVND } from '@/lib/format'
+import { localizeCategoryName } from '@/lib/i18n'
+import { useLanguage } from '@/context/LanguageContext'
 
 export function CategoryDonut({
   items,
@@ -9,18 +11,17 @@ export function CategoryDonut({
   items: CategoryBreakdownItem[]
   total: number
 }) {
+  const { t, lang } = useLanguage()
   const top = items.slice(0, 6)
   const data = top.map((i) => ({
-    name: i.category?.name ?? 'Khác',
+    name: i.category ? localizeCategoryName(i.category.name, lang) : t('common.other'),
     value: i.total,
     color: i.category?.color ?? '#6B7280',
   }))
 
   if (data.length === 0) {
     return (
-      <div className="flex h-48 items-center justify-center text-sm text-ink-400">
-        Chưa có dữ liệu để hiển thị
-      </div>
+      <div className="flex h-48 items-center justify-center text-sm text-ink-400">{t('common.noData')}</div>
     )
   }
 
@@ -46,7 +47,7 @@ export function CategoryDonut({
         </ResponsiveContainer>
       </div>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[11px] text-ink-400">Tổng chi</span>
+        <span className="text-[11px] text-ink-400">{t('common.totalExpense')}</span>
         <span className="font-display text-base font-extrabold text-ink-900 dark:text-white">
           {formatVND(total)}
         </span>

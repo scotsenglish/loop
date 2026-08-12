@@ -99,7 +99,11 @@ export interface MonthPoint {
   income: number
 }
 
-export function monthlyTotalsForYear(transactions: Transaction[], year: string): MonthPoint[] {
+export function monthlyTotalsForYear(
+  transactions: Transaction[],
+  year: string,
+  lang: 'vi' | 'en' = 'vi'
+): MonthPoint[] {
   const points: MonthPoint[] = []
   for (let m = 1; m <= 12; m++) {
     const mm = String(m).padStart(2, '0')
@@ -107,7 +111,7 @@ export function monthlyTotalsForYear(transactions: Transaction[], year: string):
     const tx = transactions.filter((t) => t.date.startsWith(key))
     points.push({
       month: key,
-      label: `Th${m}`,
+      label: lang === 'en' ? `M${m}` : `Th${m}`,
       expense: sumByType(tx, 'expense'),
       income: sumByType(tx, 'income'),
     })

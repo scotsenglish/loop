@@ -2,13 +2,16 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import { useData } from '@/context/DataContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { BudgetProgressBar } from '@/components/BudgetProgressBar'
 import { formatNumber, parseAmountInput } from '@/lib/format'
+import { localizeCategoryName } from '@/lib/i18n'
 import { monthKey, monthTransactions } from '@/lib/stats'
 
 export default function Budgets() {
   const navigate = useNavigate()
+  const { t, lang } = useLanguage()
   const { categories, budgets, transactions, setBudget, removeBudget } = useData()
   const [month, setMonth] = useState(monthKey(new Date()))
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -46,7 +49,7 @@ export default function Budgets() {
         <button onClick={() => navigate(-1)} className="rounded-full p-1.5 active:bg-ink-100 dark:active:bg-ink-800">
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">Ngân sách</h1>
+        <h1 className="font-display text-xl font-extrabold text-ink-900 dark:text-white">{t('budgetsPage.title')}</h1>
       </div>
 
       <div className="mt-4">
@@ -69,9 +72,11 @@ export default function Budgets() {
                   {c.icon}
                 </span>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-ink-800 dark:text-white">{c.name}</p>
+                  <p className="text-sm font-semibold text-ink-800 dark:text-white">
+                    {localizeCategoryName(c.name, lang)}
+                  </p>
                   {!budget && !isEditing && (
-                    <p className="text-xs text-ink-400">Chưa đặt ngân sách</p>
+                    <p className="text-xs text-ink-400">{t('budgetsPage.notSet')}</p>
                   )}
                 </div>
                 {isEditing ? (
@@ -88,7 +93,7 @@ export default function Budgets() {
                       onClick={() => saveEdit(c.id)}
                       className="rounded-lg bg-brand-500 px-2.5 py-1 text-xs font-semibold text-white"
                     >
-                      Lưu
+                      {t('budgetsPage.save')}
                     </button>
                   </div>
                 ) : (
@@ -96,7 +101,7 @@ export default function Budgets() {
                     onClick={() => startEdit(c.id, budget?.amount)}
                     className="text-xs font-semibold text-brand-500"
                   >
-                    {budget ? `${formatNumber(budget.amount)}₫` : 'Đặt'}
+                    {budget ? `${formatNumber(budget.amount)}₫` : t('budgetsPage.set')}
                   </button>
                 )}
               </div>

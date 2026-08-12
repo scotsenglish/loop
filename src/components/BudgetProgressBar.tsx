@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import type { Category } from '@/types'
 import { formatVND } from '@/lib/format'
+import { localizeCategoryName } from '@/lib/i18n'
+import { useLanguage } from '@/context/LanguageContext'
 
 export function BudgetProgressBar({
   category,
@@ -11,6 +13,7 @@ export function BudgetProgressBar({
   spent: number
   budget: number
 }) {
+  const { t, lang } = useLanguage()
   const percent = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0
   const over = spent > budget
   const near = !over && percent >= 80
@@ -20,7 +23,7 @@ export function BudgetProgressBar({
       <div className="mb-1.5 flex items-center justify-between text-xs">
         <span className="flex items-center gap-1.5 font-medium text-ink-600 dark:text-ink-300">
           <span>{category?.icon}</span>
-          {category?.name}
+          {category ? localizeCategoryName(category.name, lang) : ''}
         </span>
         <span
           className={clsx(
@@ -42,7 +45,7 @@ export function BudgetProgressBar({
       </div>
       {over && (
         <p className="mt-1 text-[11px] font-medium text-rose-500">
-          Vượt ngân sách {formatVND(spent - budget)}
+          {t('budget.over', formatVND(spent - budget))}
         </p>
       )}
     </div>

@@ -1,4 +1,6 @@
 import type { Category, Transaction } from '@/types'
+import type { Lang } from '@/lib/i18n'
+import { dictionaries, localizeCategoryName } from '@/lib/i18n'
 
 function download(filename: string, content: string, mime: string) {
   const blob = new Blob([content], { type: mime })
@@ -10,14 +12,16 @@ function download(filename: string, content: string, mime: string) {
   URL.revokeObjectURL(url)
 }
 
-export function exportTransactionsCSV(transactions: Transaction[], categories: Category[]) {
-  const header = ['Ngày', 'Loại', 'Danh mục', 'Số tiền', 'Ghi chú']
+export function exportTransactionsCSV(transactions: Transaction[], categories: Category[], lang: Lang = 'vi') {
+  const dict = dictionaries[lang]
+  const s = (key: string) => dict[key] as string
+  const header = [s('csv.date'), s('csv.type'), s('csv.category'), s('csv.amount'), s('csv.note')]
   const rows = transactions.map((t) => {
     const cat = categories.find((c) => c.id === t.categoryId)
     return [
       t.date,
-      t.type === 'expense' ? 'Chi tiêu' : 'Thu nhập',
-      cat?.name ?? '',
+      t.type === 'expense' ? s('csv.expense') : s('csv.income'),
+      cat ? localizeCategoryName(cat.name, lang) : '',
       String(t.amount),
       (t.note ?? '').replace(/[\r\n,]+/g, ' '),
     ]

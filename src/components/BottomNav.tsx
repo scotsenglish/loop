@@ -1,17 +1,20 @@
 import { NavLink } from 'react-router-dom'
 import { Home, Receipt, BarChart3, Settings, Plus } from 'lucide-react'
 import clsx from 'clsx'
-
-const items = [
-  { to: '/', label: 'Trang chủ', icon: Home, end: true },
-  { to: '/transactions', label: 'Giao dịch', icon: Receipt, end: false },
-]
-const itemsRight = [
-  { to: '/stats', label: 'Thống kê', icon: BarChart3, end: false },
-  { to: '/settings', label: 'Cài đặt', icon: Settings, end: false },
-]
+import { useLanguage } from '@/context/LanguageContext'
 
 export function BottomNav({ onAdd }: { onAdd: () => void }) {
+  const { t } = useLanguage()
+
+  const items = [
+    { to: '/', label: t('nav.home'), icon: Home, end: true },
+    { to: '/transactions', label: t('nav.transactions'), icon: Receipt, end: false },
+  ]
+  const itemsRight = [
+    { to: '/stats', label: t('nav.stats'), icon: BarChart3, end: false },
+    { to: '/settings', label: t('nav.settings'), icon: Settings, end: false },
+  ]
+
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 safe-bottom safe-x">
       <div className="relative mx-auto flex max-w-lg items-center justify-between border-t border-ink-100 bg-white/90 px-4 pb-1 pt-2 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-900/90">
@@ -27,7 +30,7 @@ export function BottomNav({ onAdd }: { onAdd: () => void }) {
 
         <button
           onClick={onAdd}
-          aria-label="Thêm giao dịch"
+          aria-label={t('nav.addAria')}
           className="absolute left-1/2 top-0 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-accent-500 text-white shadow-card transition active:scale-90"
         >
           <Plus className="h-7 w-7" strokeWidth={2.5} />

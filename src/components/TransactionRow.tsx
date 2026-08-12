@@ -1,5 +1,7 @@
 import type { Category, Transaction } from '@/types'
 import { formatVND } from '@/lib/format'
+import { localizeCategoryName } from '@/lib/i18n'
+import { useLanguage } from '@/context/LanguageContext'
 import clsx from 'clsx'
 
 export function TransactionRow({
@@ -11,6 +13,7 @@ export function TransactionRow({
   category: Category | undefined
   onClick?: () => void
 }) {
+  const { t, lang } = useLanguage()
   return (
     <button
       onClick={onClick}
@@ -24,7 +27,7 @@ export function TransactionRow({
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-ink-800 dark:text-ink-50">
-          {category?.name ?? 'Không rõ danh mục'}
+          {category ? localizeCategoryName(category.name, lang) : t('tx.unknownCategory')}
         </p>
         {tx.note && <p className="truncate text-xs text-ink-400">{tx.note}</p>}
       </div>
