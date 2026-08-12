@@ -105,7 +105,7 @@ export default function Budgets() {
                     <input
                       autoFocus
                       inputMode="numeric"
-                      value={draft}
+                      value={draft ? formatNumber(parseInt(draft, 10)) : ''}
                       onChange={(e) => setDraft(parseAmountInput(e.target.value).toString())}
                       className="w-24 rounded-lg border border-ink-200 bg-ink-50 px-2 py-1 text-right text-sm dark:border-ink-700 dark:bg-ink-800"
                       placeholder="0"

@@ -15,7 +15,6 @@ import { TransactionRow } from '@/components/TransactionRow'
 import { AddTransactionSheet } from '@/components/AddTransactionSheet'
 import { AnimatedNumber } from '@/components/AnimatedNumber'
 import { EmptyState } from '@/components/EmptyState'
-import { HabitHeatmap } from '@/components/HabitHeatmap'
 import { PullToRefresh } from '@/components/PullToRefresh'
 import { GoalProgressBar } from '@/components/GoalProgressBar'
 import { formatVND } from '@/lib/format'
@@ -150,15 +149,6 @@ export default function Home() {
               <GoalProgressBar goal={nearestGoal} />
             </Link>
           )}
-
-          <section className="card-surface mt-4 rounded-2xl p-4 shadow-soft">
-            <h2 className="font-display text-sm font-bold text-ink-800 dark:text-white">
-              {t('home.habitSection')}
-            </h2>
-            <div className="mt-2">
-              <HabitHeatmap />
-            </div>
-          </section>
 
           <section className="card-surface mt-4 rounded-2xl p-4 shadow-soft">
             <div className="flex items-center justify-between">

@@ -84,11 +84,6 @@ const vi: Dict = {
   'home.viewAll': 'Xem tất cả',
   'home.noTx': 'Chưa có giao dịch nào',
   'home.addFirstTx': 'Thêm giao dịch đầu tiên',
-  'home.habitSection': 'Thói quen ghi chép',
-
-  // Habit heatmap
-  'heatmap.less': 'Ít hơn',
-  'heatmap.more': 'Nhiều hơn',
 
   // Transactions page
   'txPage.title': 'Giao dịch',
@@ -303,11 +298,6 @@ const en: Dict = {
   'home.viewAll': 'View all',
   'home.noTx': 'No transactions yet',
   'home.addFirstTx': 'Add your first transaction',
-  'home.habitSection': 'Logging habit',
-
-  // Habit heatmap
-  'heatmap.less': 'Less',
-  'heatmap.more': 'More',
 
   // Transactions page
   'txPage.title': 'Transactions',

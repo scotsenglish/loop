@@ -6,7 +6,7 @@ import { useData } from '@/context/DataContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { useToast } from '@/context/ToastContext'
 import { EMOJI_CHOICES, COLOR_CHOICES } from '@/lib/pickerOptions'
-import { parseAmountInput } from '@/lib/format'
+import { formatNumber, parseAmountInput } from '@/lib/format'
 
 interface Props {
   open: boolean
@@ -91,7 +91,7 @@ export function GoalFormSheet({ open, onClose }: Props) {
           <p className="mb-1.5 mt-4 text-xs font-medium text-ink-400">{t('goalsPage.targetAmount')}</p>
           <input
             inputMode="numeric"
-            value={targetStr}
+            value={targetStr ? formatNumber(parseInt(targetStr, 10)) : ''}
             onChange={(e) => setTargetStr(parseAmountInput(e.target.value).toString())}
             placeholder="0"
             className="w-full rounded-xl border border-ink-200 bg-ink-50 px-3 py-2.5 text-sm dark:border-ink-700 dark:bg-ink-800"

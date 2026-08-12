@@ -16,8 +16,8 @@ export function BottomNav({ onAdd }: { onAdd: () => void }) {
   ]
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 safe-bottom safe-x">
-      <div className="relative mx-auto flex max-w-lg items-center justify-between border-t border-ink-100 bg-white/90 px-4 pb-1 pt-2 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-900/90">
+    <nav className="fixed inset-x-0 bottom-0 z-30 safe-bottom safe-x border-t border-ink-100 bg-white/90 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-900/90">
+      <div className="relative mx-auto flex max-w-lg items-center justify-between px-4 pb-1 pt-2">
         {items.map((item) => (
           <NavItem key={item.to} {...item} />
         ))}
