@@ -54,7 +54,7 @@ export function PinVerifySheet({ open, onClose, onVerified }: Props) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-ink-950 px-6 text-white safe-top safe-bottom">
+    <div className="animate-fade-in fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-ink-950 px-6 text-white safe-top safe-bottom">
       <button
         onClick={handleClose}
         className="absolute right-5 top-5 rounded-full p-2 text-ink-300 active:bg-white/10"

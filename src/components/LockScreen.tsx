@@ -47,7 +47,7 @@ export function LockScreen() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-ink-950 px-6 text-white safe-top safe-bottom">
+    <div className="animate-fade-in flex min-h-dvh flex-col items-center justify-center gap-8 bg-ink-950 px-6 text-white safe-top safe-bottom">
       <div className="text-center">
         <h1 className="font-display text-xl font-bold">{t('lock.title')}</h1>
         <p className={clsx('mt-1 text-sm', error ? 'text-rose-400' : 'text-ink-300')}>

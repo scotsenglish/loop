@@ -191,7 +191,7 @@ export default function Stats() {
               {yearBreakdown.slice(0, 8).map((b) => (
                 <div key={b.categoryId} className="flex items-center gap-2 text-sm">
                   <span
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-sm"
+                    className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full text-sm leading-none"
                     style={{ backgroundColor: (b.category?.color ?? '#999') + '22' }}
                   >
                     {b.category?.icon}

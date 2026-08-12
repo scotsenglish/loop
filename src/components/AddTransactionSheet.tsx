@@ -118,7 +118,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
   const canSave = (parseInt(amountStr, 10) || 0) > 0 && !!categoryId
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-ink-950/50 backdrop-blur-sm">
+    <div className="animate-fade-in fixed inset-0 z-40 flex items-end justify-center bg-ink-950/50 backdrop-blur-sm">
       <div className="animate-rise-in flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-3xl bg-white safe-bottom dark:bg-ink-900">
         <div className="flex items-center justify-between px-5 pt-4">
           <button onClick={onClose} className="rounded-full p-2 text-ink-400 active:bg-ink-100 dark:active:bg-ink-800">
@@ -170,7 +170,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
             <span className="ml-1 text-lg font-semibold text-ink-400">₫</span>
           </div>
 
-          <div className="mt-5 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar">
+          <div className="mt-5 -mx-1 flex gap-2 overflow-x-auto px-1 py-1.5 no-scrollbar">
             {visibleCategories.map((c) => (
               <button
                 key={c.id}
@@ -181,7 +181,7 @@ export function AddTransactionSheet({ open, onClose, editing }: Props) {
                 )}
               >
                 <span
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-xl"
+                  className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full text-xl leading-none"
                   style={{ backgroundColor: c.color + '22' }}
                 >
                   {c.icon}

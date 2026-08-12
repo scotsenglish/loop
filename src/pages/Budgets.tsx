@@ -66,7 +66,7 @@ export default function Budgets() {
             <div key={c.id} className="px-2 py-2.5">
               <div className="flex items-center gap-3">
                 <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-lg leading-none"
                   style={{ backgroundColor: c.color + '22' }}
                 >
                   {c.icon}

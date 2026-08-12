@@ -69,7 +69,7 @@ export default function Categories() {
         {list.map((c) => (
           <div key={c.id} className="flex items-center gap-3 px-2 py-2.5">
             <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg"
+              className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-lg leading-none"
               style={{ backgroundColor: c.color + '22' }}
             >
               {c.icon}
@@ -111,7 +111,7 @@ export default function Categories() {
                 key={e}
                 onClick={() => setIcon(e)}
                 className={clsx(
-                  'flex h-9 w-9 items-center justify-center rounded-full text-lg',
+                  'flex h-9 w-9 items-center justify-center overflow-hidden rounded-full text-lg leading-none',
                   icon === e ? 'ring-2 ring-brand-400' : 'bg-ink-50 dark:bg-ink-800'
                 )}
               >

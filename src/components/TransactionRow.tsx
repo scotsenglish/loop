@@ -39,7 +39,7 @@ export function TransactionRow({
         </span>
       )}
       <span
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg"
+        className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full text-lg leading-none"
         style={{ backgroundColor: (category?.color ?? '#6B7280') + '22' }}
       >
         {category?.icon ?? '🔖'}
