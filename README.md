@@ -65,9 +65,7 @@ Firebase là dịch vụ của Google dùng để lưu trữ dữ liệu chi ti�
 
 1. Vào [console.firebase.google.com](https://console.firebase.google.com), đăng nhập bằng tài khoản Google.
 2. Bấm **Add project** (hoặc **Tạo dự án**) → đặt tên, ví dụ `loop-expenses` → bấm tiếp cho đến khi tạo xong (có thể tắt Google Analytics nếu được hỏi, không bắt buộc).
-3. Trong menu bên trái, vào **Build → Authentication** → bấm **Get started** → chọn tab **Sign-in method**. Bật cả 2 cách đăng nhập sau (app hỗ trợ cả hai, bạn dùng cách nào tiện thì thôi):
-   - Bấm **Email/Password** → bật công tắc ở dòng đầu tiên → **Save**. Đây là cách đăng nhập bằng email + mật khẩu tự đặt, đơn giản và ít lỗi vặt nhất, đặc biệt khi dùng trên app đã cài vào màn hình chính.
-   - Bấm **Google** → bật công tắc **Enable** → chọn email hỗ trợ → **Save**.
+3. Trong menu bên trái, vào **Build → Authentication** → bấm **Get started** → chọn tab **Sign-in method** → bấm **Email/Password** → bật công tắc ở dòng đầu tiên → **Save**. Đây là cách app dùng để đăng nhập: bạn tự đặt email + mật khẩu riêng, không cần tài khoản Google.
 4. Vẫn trong menu bên trái, vào **Build → Firestore Database** → **Create database** → chọn **Start in production mode** → chọn khu vực gần bạn nhất, ví dụ `asia-southeast1 (Singapore)` → **Enable**.
 5. Bấm biểu tượng **bánh răng ⚙️** ở góc trên bên trái → **Project settings**. Kéo xuống mục **Your apps**, bấm vào icon **`</>`** (Web). Đặt tên app (ví dụ `loop-web`) → **Register app**.
 6. Firebase sẽ hiện ra một đoạn code như thế này — **giữ nguyên trang này**, bạn sẽ cần copy các giá trị ở bước 2:
@@ -158,7 +156,7 @@ Sau vài giây, Terminal hiện một dòng dạng:
 ```
 ➜  Local:   http://localhost:5173/
 ```
-Giữ phím **Cmd** và bấm chuột vào đường link đó (hoặc copy dán vào Chrome/Safari). Trang Loop sẽ hiện ra. Bấm **Tiếp tục với Google** để đăng nhập thử — nếu đăng nhập được và vào tới màn hình chính là mọi thứ đã đúng.
+Giữ phím **Cmd** và bấm chuột vào đường link đó (hoặc copy dán vào Chrome/Safari). Trang Loop sẽ hiện ra. Bấm tab **Tạo tài khoản**, nhập một email và mật khẩu bạn tự đặt (ít nhất 6 ký tự) rồi bấm **Tạo tài khoản** — nếu vào được tới màn hình chính là mọi thứ đã đúng. Đây cũng chính là email/mật khẩu bạn sẽ dùng để đăng nhập trên điện thoại/iPad sau này.
 
 Để dừng app lại, quay vào Terminal và nhấn **Ctrl + C**.
 
@@ -236,7 +234,6 @@ git push -u origin main
 
 4. Vào tab **Actions** ở trên cùng của repo — bạn sẽ thấy một quy trình (workflow) đang chạy hoặc đã chạy xong (dấu tick xanh ✅). Đợi khoảng 1–2 phút để nó hoàn tất.
 5. Link app của bạn sẽ có dạng: `https://<ten-tai-khoan>.github.io/loop/` — vào lại **Settings → Pages** để xem link chính xác.
-6. Quay lại **Firebase Console → Authentication → Settings (tab) → Authorized domains** → bấm **Add domain**, dán vào `<ten-tai-khoan>.github.io` → **Add**. (Bỏ qua bước này thì đăng nhập Google trên link GitHub Pages sẽ báo lỗi.)
 
 Từ giờ, mỗi khi bạn sửa code và "push" (hoặc dùng GitHub Desktop bấm **Push origin**), trang web sẽ tự cập nhật sau 1–2 phút — không cần làm lại các bước trên.
 
@@ -295,7 +292,7 @@ React + TypeScript + Vite, Tailwind CSS, Firebase (Authentication, Firestore, Cl
 
 - **`command not found: npm` hoặc `node`:** Node.js chưa được cài hoặc Terminal chưa nhận — làm lại Bước 0.2, sau đó **đóng hẳn Terminal và mở lại cửa sổ mới**.
 - **Trang trắng / lỗi "Chưa cấu hình Firebase":** kiểm tra lại file `.env` (khi chạy local) hoặc Secrets trên GitHub (khi đã deploy) đã điền đủ 6 giá trị chưa, không có khoảng trắng thừa.
-- **Đăng nhập Google báo lỗi domain:** thêm domain vào Authorized domains như hướng dẫn ở Bước 4.6.
-- **Không thấy dữ liệu đồng bộ giữa 2 thiết bị:** đảm bảo bạn đăng nhập **cùng một tài khoản Google** trên cả điện thoại và iPad.
+- **Không thấy dữ liệu đồng bộ giữa 2 thiết bị:** đảm bảo bạn đăng nhập **cùng một email/mật khẩu** trên cả điện thoại và iPad.
+- **Quên mật khẩu:** ở màn hình đăng nhập, bấm **Quên mật khẩu?**, nhập email đã dùng để tạo tài khoản — Firebase sẽ gửi email đặt lại mật khẩu.
 - **Không nhận được thông báo trên iPhone:** phải "Add to Home Screen" trước, mở app từ icon trên màn hình chính (không phải từ Safari), rồi mới bật nhắc nhở trong Cài đặt.
 - **`npm install` báo lỗi đỏ (error):** thử xoá thư mục `node_modules` (nếu có) rồi chạy lại `npm install`; hoặc kiểm tra đã `cd` đúng vào thư mục `loop` chưa (gõ `pwd` trong Terminal để xem đường dẫn hiện tại).

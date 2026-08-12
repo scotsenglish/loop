@@ -13,36 +13,18 @@ function friendlyError(code: string | null): string | null {
     'auth/email-already-in-use': 'Email này đã có tài khoản — thử đăng nhập thay vì tạo mới.',
     'auth/weak-password': 'Mật khẩu cần ít nhất 6 ký tự.',
     'auth/too-many-requests': 'Bạn thử sai quá nhiều lần, vui lòng đợi một lát rồi thử lại.',
-    'auth/popup-blocked': 'Trình duyệt đã chặn cửa sổ đăng nhập Google.',
-    'auth/unauthorized-domain': 'Domain này chưa được cấp phép trong Firebase (Authorized domains).',
   }
   return map[code] ?? `Có lỗi xảy ra (${code}).`
 }
 
 export default function Login() {
-  const { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, configured, authError } =
-    useAuth()
+  const { signInWithEmail, signUpWithEmail, resetPassword, configured } = useAuth()
   const [mode, setMode] = useState<Mode>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [googleLoading, setGoogleLoading] = useState(false)
-
-  async function handleGoogle() {
-    setError(null)
-    setInfo(null)
-    setGoogleLoading(true)
-    try {
-      await signInWithGoogle()
-    } catch (e) {
-      setError('Đăng nhập Google thất bại, vui lòng thử lại hoặc dùng email/mật khẩu bên dưới.')
-      console.error(e)
-    } finally {
-      setGoogleLoading(false)
-    }
-  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -162,32 +144,8 @@ export default function Login() {
               </button>
             </form>
 
-            <div className="my-4 flex items-center gap-3 text-xs text-ink-400">
-              <div className="h-px flex-1 bg-white/10" />
-              hoặc
-              <div className="h-px flex-1 bg-white/10" />
-            </div>
-
-            <button
-              onClick={handleGoogle}
-              disabled={googleLoading}
-              className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-5 py-3.5 font-semibold text-ink-900 shadow-soft transition active:scale-[0.98] disabled:opacity-60"
-            >
-              <GoogleIcon className="h-5 w-5" />
-              {googleLoading ? 'Đang đăng nhập…' : 'Tiếp tục với Google'}
-            </button>
-
             {error && <p className="mt-3 text-center text-sm text-rose-400">{error}</p>}
             {info && <p className="mt-3 text-center text-sm text-mint-400">{info}</p>}
-            {authError && (
-              <div className="mt-3 rounded-xl border border-rose-400/30 bg-rose-400/10 p-3 text-center text-xs text-rose-200">
-                <p className="font-semibold">Đăng nhập Google chưa hoàn tất</p>
-                <p className="mt-1 text-rose-200/80">
-                  Mã lỗi: <code className="rounded bg-black/30 px-1">{authError}</code> — bạn có
-                  thể dùng email/mật khẩu ở trên thay thế.
-                </p>
-              </div>
-            )}
 
             <p className="mt-6 text-center text-xs text-ink-400">
               Dữ liệu của bạn được đồng bộ an toàn và riêng tư giữa các thiết bị.
@@ -213,29 +171,6 @@ function LoopMark({ className }: { className?: string }) {
     <svg viewBox="0 0 48 48" fill="none" className={className}>
       <circle cx="18" cy="24" r="9" stroke="currentColor" strokeWidth="4" />
       <circle cx="30" cy="24" r="9" stroke="currentColor" strokeWidth="4" />
-    </svg>
-  )
-}
-
-function GoogleIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path
-        fill="#4285F4"
-        d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.43 3.58v3h3.93c2.3-2.12 3.52-5.24 3.52-8.82z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.93-3c-1.09.73-2.5 1.16-4 1.16-3.08 0-5.68-2.08-6.61-4.88H1.34v3.09C3.31 21.3 7.33 24 12 24z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.39 14.37c-.24-.73-.38-1.5-.38-2.37s.14-1.64.38-2.37V6.54H1.34C.49 8.2 0 10.05 0 12s.49 3.8 1.34 5.46l4.05-3.09z"
-      />
-      <path
-        fill="#EA4335"
-        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.33 0 3.31 2.7 1.34 6.54l4.05 3.09C6.32 6.83 8.92 4.75 12 4.75z"
-      />
     </svg>
   )
 }

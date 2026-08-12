@@ -4,7 +4,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from 'firebase/firestore'
-import { getAuth, GoogleAuthProvider } from 'firebase/auth'
+import { getAuth } from 'firebase/auth'
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -28,6 +28,5 @@ export const db = initializeFirestore(app, {
 })
 
 export const auth = getAuth(app)
-export const googleProvider = new GoogleAuthProvider()
 
 export const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined

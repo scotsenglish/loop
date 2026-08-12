@@ -1,17 +1,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import {
   createUserWithEmailAndPassword,
-  getRedirectResult,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
   signOut as fbSignOut,
   type User,
 } from 'firebase/auth'
 import { getDocs, collection, limit, query } from 'firebase/firestore'
-import { auth, googleProvider, db, isFirebaseConfigured } from '@/lib/firebase'
+import { auth, db, isFirebaseConfigured } from '@/lib/firebase'
 import { ensureUserInitialized } from '@/lib/firestoreApi'
 
 interface AuthContextValue {
@@ -19,7 +16,6 @@ interface AuthContextValue {
   loading: boolean
   configured: boolean
   authError: string | null
-  signInWithGoogle: () => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<void>
   signUpWithEmail: (email: string, password: string) => Promise<void>
   resetPassword: (email: string) => Promise<void>
@@ -27,7 +23,6 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
-
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -39,13 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
       return
     }
-
-    // Resolve any pending redirect-based sign-in (mobile flow) and surface
-    // errors instead of silently getting stuck on the login screen.
-    getRedirectResult(auth).catch((err) => {
-      console.error('Redirect sign-in error:', err)
-      setAuthError(err?.code ?? 'Đăng nhập qua redirect thất bại')
-    })
 
     const unsub = onAuthStateChanged(auth, async (u) => {
       if (u) {
@@ -63,31 +51,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     return unsub
   }, [])
-
-  const signInWithGoogle = async () => {
-    setAuthError(null)
-    // Popup works reliably in regular browser tabs (desktop + mobile) and,
-    // on Android, inside an installed home-screen app too (it's still full
-    // Chrome under the hood). Only fall back to redirect if the popup path
-    // itself fails — e.g. iOS standalone mode, where window.open can't hand
-    // control back to the app.
-    try {
-      await signInWithPopup(auth, googleProvider)
-    } catch (err) {
-      const code = (err as { code?: string })?.code
-      const redirectFallbackCodes = [
-        'auth/popup-blocked',
-        'auth/cancelled-popup-request',
-        'auth/operation-not-supported-in-this-environment',
-      ]
-      if (code && redirectFallbackCodes.includes(code)) {
-        await signInWithRedirect(auth, googleProvider)
-        return
-      }
-      setAuthError(code ?? 'unknown-error')
-      throw err
-    }
-  }
 
   const signInWithEmail = async (email: string, password: string) => {
     setAuthError(null)
@@ -113,7 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         configured: isFirebaseConfigured,
         authError,
-        signInWithGoogle,
         signInWithEmail,
         signUpWithEmail,
         resetPassword,
