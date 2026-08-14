@@ -126,6 +126,12 @@ const vi: Dict = {
   'budgetsPage.notSet': 'Chưa đặt ngân sách',
   'budgetsPage.save': 'Lưu',
   'budgetsPage.set': 'Đặt',
+  'budgetsPage.byMonth': 'Theo tháng',
+  'budgetsPage.customRange': 'Khoảng ngày tuỳ chỉnh',
+  'budgetsPage.fromDate': 'Từ ngày',
+  'budgetsPage.toDate': 'Đến ngày',
+  'budgetsPage.invalidRange': 'Ngày kết thúc phải sau ngày bắt đầu',
+  'budgetsPage.pickRange': 'Chọn ngày bắt đầu và kết thúc để theo dõi ngân sách theo khoảng này',
 
   // Categories page
   'categoriesPage.title': 'Danh mục',
@@ -340,6 +346,12 @@ const en: Dict = {
   'budgetsPage.notSet': 'No budget set',
   'budgetsPage.save': 'Save',
   'budgetsPage.set': 'Set',
+  'budgetsPage.byMonth': 'By month',
+  'budgetsPage.customRange': 'Custom date range',
+  'budgetsPage.fromDate': 'From',
+  'budgetsPage.toDate': 'To',
+  'budgetsPage.invalidRange': 'End date must be after the start date',
+  'budgetsPage.pickRange': 'Pick a start and end date to track budgets for that range',
 
   // Categories page
   'categoriesPage.title': 'Categories',
